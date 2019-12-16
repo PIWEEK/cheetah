@@ -1,0 +1,4 @@
+node_modules/
+dist/
+docker/postgres-data
+src/config.ts
