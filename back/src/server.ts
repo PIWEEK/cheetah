@@ -18,8 +18,6 @@ const pool = new Pool({
   user: Config.db.user,
 });
 
-
-
 router.get('/', async (ctx) => {
   const result = await pool.query('SELECT NOW()');
 
