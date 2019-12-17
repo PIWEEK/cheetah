@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'dart:developer';
 
 // https://medium.com/flutterpub/sample-form-part-1-flutter-35664d57b0e5
@@ -39,6 +41,21 @@ class CreateFormState extends State<CreateForm > {
   // Future<http.Response> fetchPost() {
   //  return http.get('https://jsonplaceholder.typicode.com/posts/1');
   //}
+
+  Future createPost({Map body}) async {
+    print('Empieza: ${body['title']}');
+
+    return http.post('http://10.8.1.138:3000/mock/create', body: body).then((http.Response response) {
+      print('1');
+      final int statusCode = response.statusCode;
+      print('2');
+      if (statusCode < 200 || statusCode > 400 || json == null) {
+        throw new Exception("Error while fetching data");
+      }
+      print('3');
+      return jsonDecode(response.body);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,15 +102,21 @@ class CreateFormState extends State<CreateForm > {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: RaisedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
 
                       print('Titulo: ${_data.title}');
                       print('Descripción: ${_data.description}');
 
+                      var map = new Map<String, dynamic>();
+                      map["title"] = _data.title;
+
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text('Envíando datos')));
+
+                      var p = await createPost(body: map);
+                      print('Respuesta: ${p['data']['name']}');
                     }
                   },
                   child: Text('Enviar'),
