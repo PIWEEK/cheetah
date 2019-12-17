@@ -1,3 +1,4 @@
+import 'package:cheetah/create.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 
@@ -8,8 +9,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cheetah',
-      home: MyHomePage()
+        title: 'Cheetah',
+        home: MyHomePage()
     );
   }
 }
@@ -46,10 +47,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chats'),
+        actions: <Widget>[      // Add 3 lines from here...
+          IconButton(icon: Icon(Icons.add), onPressed: _create),
+        ],
       ),
       body: _buildChats(),
     );
   }
+
   Widget _buildChats() {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
@@ -68,9 +73,26 @@ class _MyHomePageState extends State<MyHomePage> {
     log('data: $talk');
     return ListTile(
       title: Text(
-        talk['title']
+          talk['title']
       ),
       onTap: _detail,
+    );
+  }
+
+  void _create() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Crear plan'),
+            ),
+            body: Center(
+              child: CreateForm(),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -78,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return Scaffold(         // Add 6 lines from here...
+          return Scaffold(
             appBar: AppBar(
               title: Text('Detalle'),
             ),
