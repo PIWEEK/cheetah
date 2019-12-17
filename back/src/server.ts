@@ -21,18 +21,37 @@ const pool = new Pool({
 });
 
 router.post('/mock/create', koaBody(), async (ctx) => {
-  console.log('--------------------');
-  console.log(ctx);
   console.log(ctx.request.body);
 
   ctx.status = 201;
   ctx.body = {
     status: 'success',
     data:  {
-      name: `bien`,
+      id : 123,
+      name: 'New plan', 
+      description: 'plan descripcion',  
+      date: '2019-12-09 23:00:00.000Z',
+      time: '8:52',    
+      min_attendees: 0
     }
   };
-})
+});
+
+router.post('/mock/create-user', koaBody(), async (ctx) => {
+  console.log(ctx.request.body);
+  /*
+  {
+    name: xx,
+    phone: 60000000
+  }
+  */
+
+  ctx.status = 201;
+  ctx.body = {
+    status: 'success',
+    data:  {}
+  };
+});
 
 pool.query(fs.readFileSync(path.resolve(__dirname, '../src/tables.sql'), 'utf8'));
 

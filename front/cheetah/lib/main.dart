@@ -1,6 +1,7 @@
 import 'package:cheetah/create.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(MyApp());
 
@@ -43,6 +44,13 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   @override
+  // void didChangeDependencies() async {
+  void initState() {
+    super.initState();
+    _checkPermissions();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -70,13 +78,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRow(talk) {
-    log('data: $talk');
     return ListTile(
       title: Text(
           talk['title']
       ),
       onTap: _detail,
     );
+  }
+
+  Future<bool> requestContactsPermission() async {
+    var permissionHandler = await PermissionHandler();
+
+    var result = await permissionHandler.requestPermissions([PermissionGroup.contacts]);
+    if (result[PermissionGroup.contacts] == PermissionStatus.granted) {
+      return true;
+    }
+
+    return false;
+  }
+
+  void _checkPermissions() async {
+    var contactsPermission = await requestContactsPermission();
+    print('contactsPermission: $contactsPermission');
   }
 
   void _create() {
