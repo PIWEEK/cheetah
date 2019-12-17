@@ -1,6 +1,6 @@
 import cors from '@koa/cors';
 import Router from '@koa/router';
-import Koa from 'koa';
+import Koa, { Context } from 'koa';
 import koaBody from 'koa-body';
 import logger from 'koa-logger';
 import { Pool } from 'pg';
@@ -65,13 +65,19 @@ router.get('/', async (ctx) => {
 
 router.post('/register', koaBody(), async (ctx) => {
   try {
-    // check if  the phone exists in attendee
+    let res;
     const body = ctx.request.body;
-    const owner_text = 'INSERT INTO attendee(name, phone) VALUES($1, $2) RETURNING *';
     const owner_values = [body.name, body.phone];
-    const res = await pool.query(owner_text, owner_values);
 
-    ctx.status = 201;
+    if(isPhoneInAttendees(body.phone)) {
+      res = await pool.query('UPDATE attendee SET name = $1 WHERE phone = $2', owner_values);
+    } else {
+      const owner_text = 'INSERT INTO attendee(name, phone) VALUES($1, $2) RETURNING *';
+      res = await pool.query(owner_text, owner_values);
+  
+      ctx.status = 201;
+    }
+
     ctx.body = {
       status: 'success',
       data: {
@@ -89,22 +95,48 @@ router.post('/register', koaBody(), async (ctx) => {
 });
 
 router.post('/create/plan', koaBody(), async (ctx) => {
-  const body = ctx.request.body
+  try {
+    const body = ctx.request.body
 
-  // insert every attendee to attendee
-  
+    // insert plan
+    const plan_text = 'INSERT INTO plan(name, description, date, time, min_attendees, owner_phone) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
+    const plan_values = [body.name, body.description, body.date, body.time, body.min_attendees, body.owner_phone];
 
-  // insert mandatory attendees
+    const createdPlan = await pool.query(plan_text, plan_values);
+    console.log('createdPlannnnnn------>', createdPlan);
 
-  // insert plan
-  const plan_text = 'INSERT INTO plan(name, description, date, time, min_attendees) VALUES($1, $2, $3, $4, $5) RETURNING *';
-  const plan_values = [body.name, body.description, body.date, body.time, body.min_attendees];
+    // set owner answer
+    await pool.query('INSERT INTO answer(plan_id, attendee_phone) VALUES($1, $2)', [createdPlan.rows[0].id, body.owner_phone]);
 
-  await pool.query(plan_text, plan_values);
-  
-  // insert answers
+    //attendees
+    body.attendees.forEach( async (attendee: any) => {
+      // insert every attendee to plan_attendee
+      await pool.query('INSERT INTO plan_attendee(plan_id, attendee_phone) VALUES($1, $2)', [createdPlan.rows[0].id, attendee]);
 
+      // insert every attendee to attendee if phone is not registered
+      if (!isPhoneInAttendees(attendee)) {
+        const text = 'INSERT INTO attendee(phone) VALUES($1)';
+        await pool.query(text, [attendee]);
+      }
 
+      // insert answers
+      await pool.query('INSERT INTO answer(plan_id, attendee_phone) VALUES($1, $2)', [createdPlan.rows[0].id, attendee]);
+    });
+
+    // insert mandatory attendees
+    if (body.mandatory) {
+      body.mandatory.forEach( async (attendee: any) => {
+        await pool.query('INSERT INTO required_attendee(plan_id, attendee_phone) VALUES($1, $2)', [createdPlan.rows[0].id, attendee]);
+      });
+    }
+  } catch(error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail
+      }
+    }
+  }
 });
 
 router.get('/plans', async (ctx) => {
@@ -145,3 +177,9 @@ app
   .use(koaBody())
   .use(logger())
   .listen(3000);
+
+  async function isPhoneInAttendees(phone: string) {
+    const getPhone = await pool.query('SELECT * FROM attendee WHERE phone = $1', [phone]);
+  
+    return !!(getPhone.rowCount > 0);
+  }
