@@ -44,6 +44,81 @@ router.get('/', async (ctx) => {
   };
 });
 
+router.post('/register', koaBody(), async (ctx) => {
+  try {
+    // check if  the phone exists in attendee
+    const body = ctx.request.body;
+    const owner_text = 'INSERT INTO attendee(name, phone) VALUES($1, $2) RETURNING *';
+    const owner_values = [body.name, body.phone];
+    const res = await pool.query(owner_text, owner_values);
+
+    ctx.status = 201;
+    ctx.body = {
+      status: 'success',
+      data: {
+        response: res.rows[0]
+      }
+    }
+  } catch (error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail
+      }
+    }
+  }
+});
+
+router.post('/create/plan', koaBody(), async (ctx) => {
+  const body = ctx.request.body
+
+  // insert every attendee to attendee
+  
+
+  // insert mandatory attendees
+
+  // insert plan
+  const plan_text = 'INSERT INTO plan(name, description, date, time, min_attendees) VALUES($1, $2, $3, $4, $5) RETURNING *';
+  const plan_values = [body.name, body.description, body.date, body.time, body.min_attendees];
+
+  await pool.query(plan_text, plan_values);
+  
+  // insert answers
+
+
+});
+
+router.get('/plans', async (ctx) => {
+  const result = await pool.query('SELECT * FROM plan');
+  ctx.body = {
+    data: {
+      result: result.rows[0]
+    }
+  }
+});
+
+router.get('/plan/:id', koaBody(), async (ctx) => {
+  try {
+    const body = ctx.request.body
+    const result = await pool.query('SELECT * FROM plan WHERE id = $1', [body.id]);
+
+    ctx.status = 201;
+    ctx.body = {
+      status: 'success',
+      data: {
+        result: result.rows[0]
+      }
+    }
+  } catch(error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail
+      }
+    }
+  }
+});
+
 app
   .use(router.routes())
   .use(router.allowedMethods())
