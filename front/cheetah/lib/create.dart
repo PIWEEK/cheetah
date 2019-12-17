@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
 
@@ -14,8 +15,11 @@ class CreateForm extends StatefulWidget {
 }
 
 class _EventData {
-  String title = '';
+  String name = '';
   String description = '';
+  DateTime date = null;
+  TimeOfDay time = null;
+  int min_attendees = 0;
 }
 
 /*
@@ -36,30 +40,55 @@ class CreateFormState extends State<CreateForm > {
   final _formKey = GlobalKey<FormState>();
 
   _EventData _data = new _EventData();
+  String _time = '';
+  String _date = '';
 
-  // https://flutter.dev/docs/cookbook/networking/fetch-data
-  // Future<http.Response> fetchPost() {
-  //  return http.get('https://jsonplaceholder.typicode.com/posts/1');
-  //}
+  final DateTime selectedDate = null;
+  final TimeOfDay selectedTime = null;
 
   Future createPost({Map body}) async {
     print('Empieza: ${body['title']}');
 
     return http.post('http://10.8.1.138:3000/mock/create', body: body).then((http.Response response) {
-      print('1');
       final int statusCode = response.statusCode;
-      print('2');
       if (statusCode < 200 || statusCode > 400 || json == null) {
-        throw new Exception("Error while fetching data");
+        throw new Exception("Error saving data");
       }
-      print('3');
+
       return jsonDecode(response.body);
     });
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    _data.date = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2015, 8),
+      lastDate: DateTime(2101),
+    );
+
+    setState(() {});
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    _data.time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now()
+    );
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
+    if (_data.date != null) {
+      _date = '${_data.date.year} - ${_data.date.month} - ${_data.date.day}';
+    }
+
+    if (_data.time != null) {
+      _time = '${_data.time.hour} : ${_data.time.minute}';
+    }
+
     return Form(
         key: _formKey,
         child: Container(
@@ -79,7 +108,7 @@ class CreateFormState extends State<CreateForm > {
                   },
                   onSaved: (String value) {
                     setState(() {
-                      _data.title = value;
+                      _data.name = value;
                     });
                   }
               ),
@@ -99,6 +128,46 @@ class CreateFormState extends State<CreateForm > {
                     });
                   }
               ),
+              new TextFormField(
+                  decoration: const InputDecoration(
+                    labelText: 'Número mínimo de asistentes',
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
+                  onSaved: (String value) {
+                    setState(() {
+                      _data.min_attendees = int.parse(value);
+                    });
+                  }
+              ),
+              Text(
+                " ${_date}",
+                style: TextStyle(
+                    color: Colors.teal,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0),
+              ),
+              FlatButton(
+                  onPressed: () {
+                    _selectDate(context);
+                  },
+                  child: Text('Seleccionar fecha',)
+              ),
+              Text(
+                " ${_time}",
+                style: TextStyle(
+                    color: Colors.teal,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0),
+              ),
+              FlatButton(
+                  onPressed: () {
+                    _selectTime(context);
+                  },
+                  child: Text('Seleccionar hora',)
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: RaisedButton(
@@ -106,11 +175,12 @@ class CreateFormState extends State<CreateForm > {
                     if (_formKey.currentState.validate()) {
                       _formKey.currentState.save();
 
-                      print('Titulo: ${_data.title}');
-                      print('Descripción: ${_data.description}');
-
                       var map = new Map<String, dynamic>();
-                      map["title"] = _data.title;
+                      map["name"] = _data.name;
+                      map["description"] = _data.description;
+                      map["date"] = _data.date.toUtc().toString();
+                      map["time"] = '${_data.time.hour}:${_data.time.minute}';
+                      map["min_attendees"] = _data.min_attendees.toString();
 
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text('Envíando datos')));
