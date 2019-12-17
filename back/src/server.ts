@@ -7,6 +7,8 @@ import { Pool } from 'pg';
 
 import Config from './config';
 
+const fs = require('fs');
+const path = require("path");
 const app = new Koa();
 const router = new Router();
 
@@ -17,6 +19,8 @@ const pool = new Pool({
   port: Config.db.port,
   user: Config.db.user,
 });
+
+pool.query(fs.readFileSync(path.resolve(__dirname, '../src/tables.sql'), 'utf8'));
 
 router.get('/', async (ctx) => {
   const result = await pool.query('SELECT NOW()');
