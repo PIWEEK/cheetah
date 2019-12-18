@@ -1,9 +1,28 @@
+import 'dart:convert';
+
 import 'package:cheetah/create.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(MyApp());
+
+class Plan {
+  final int id;
+  final String name;
+  final String description;
+
+  Plan({this.id, this.name, this.description});
+
+  factory Plan.fromJson(Map<String, dynamic> json) {
+    return Plan(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -22,32 +41,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _talks = [
-    {'title': '111'},
-    {'title': '222'},
-    {'title': '333'},
-    {'title': '444'},
-    {'title': '555'},
-    {'title': '666'},
-    {'title': '777'},
-    {'title': '888'},
-    {'title': '999'},
-    {'title': '111'},
-    {'title': '222'},
-    {'title': '333'},
-    {'title': '444'},
-    {'title': '555'},
-    {'title': '666'},
-    {'title': '777'},
-    {'title': '888'},
-    {'title': '999'},
-  ];
+  Future<List<Plan>> plans;
 
   @override
   // void didChangeDependencies() async {
   void initState() {
     super.initState();
     _checkPermissions();
+    plans = fetchPlans();
   }
 
   @override
@@ -59,7 +60,18 @@ class _MyHomePageState extends State<MyHomePage> {
           // IconButton(icon: Icon(Icons.add), onPressed: _create),
         ],
       ),
-      body: _buildChats(),
+      body: FutureBuilder<List<Plan>>(
+          future: plans,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return _buildChats(snapshot.data);
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
+
+            return CircularProgressIndicator();
+          }
+      ),
       floatingActionButton: new FloatingActionButton(
         child: new Icon(Icons.add),
         onPressed: _create
@@ -67,27 +79,39 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildChats() {
+  Widget _buildChats(List<Plan> plans) {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
+        itemBuilder: (context, i) {
           if (i.isOdd) return Divider();
 
           final index = i ~/ 2;
 
-          if (index < _talks.length) {
-            return _buildRow(_talks[index]);
+          if (index < plans.length) {
+            return _buildRow(plans[index]);
           }
         });
   }
 
-  Widget _buildRow(talk) {
+  Widget _buildRow(Plan plan) {
     return ListTile(
       title: Text(
-          talk['title']
+          plan.name
       ),
       onTap: _detail,
     );
+  }
+
+  Future<List<Plan>> fetchPlans() async {
+    final response = await http.get('http://10.8.1.138:3000/mock/plans');
+
+    if (response.statusCode == 200) {
+      List<dynamic> plans = jsonDecode(response.body)['data']['result'];
+
+      return plans.map((plan) => Plan.fromJson(plan)).toList();
+    } else {
+      throw Exception('Failed to load plans');
+    }
   }
 
   Future<bool> requestContactsPermission() async {
@@ -102,8 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _checkPermissions() async {
-    var contactsPermission = await requestContactsPermission();
-    print('contactsPermission: $contactsPermission');
+    await requestContactsPermission();
   }
 
   void _create() {

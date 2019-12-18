@@ -36,8 +36,6 @@ class CreateFormState extends State<CreateForm > {
   final TimeOfDay selectedTime = null;
 
   Future createPost({Map body}) async {
-    print('Empieza: ${body['title']}');
-
     return http.post('http://10.8.1.138:3000/mock/create', body: body).then((http.Response response) {
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400 || json == null) {

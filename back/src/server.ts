@@ -20,6 +20,37 @@ const pool = new Pool({
   user: Config.db.user,
 });
 
+router.get('/mock/plans', async (ctx) => {
+  ctx.status = 200;
+
+  ctx.body = {
+    data: {
+      result: [
+        {
+          id: 0,
+          name: 'plan 1',
+          descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.'
+        },
+        {
+          id: 1,
+          name: 'plan 2',
+          descripcion: 'Lorem ipsum dolor sit amet.'
+        },
+        {
+          id: 2,
+          name: 'plan 3',
+          descripcion: 'Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.'
+        },
+        {
+          id: 3,
+          name: 'plan 4',
+          descripcion: 'Dolor sit amet, consectetur adipiscing elit.'
+        }
+      ]
+    }
+  };
+});
+
 router.post('/mock/create', koaBody(), async (ctx) => {
   console.log(ctx.request.body);
 
@@ -39,12 +70,6 @@ router.post('/mock/create', koaBody(), async (ctx) => {
 
 router.post('/mock/create-user', koaBody(), async (ctx) => {
   console.log(ctx.request.body);
-  /*
-  {
-    name: xx,
-    phone: 60000000
-  }
-  */
 
   ctx.status = 201;
   ctx.body = {
