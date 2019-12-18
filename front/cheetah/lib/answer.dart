@@ -82,7 +82,7 @@ class AnswerState extends State<AnswerWidget> {
                children: <Widget>[
                  Text(
                    'Cheetah',
-                   style: TextStyle(color: Colors.grey, fontSize: 15.0, fontWeight: FontWeight.bold),
+                   style: TextStyle(color: Colors.black, fontSize: 15.0, fontWeight: FontWeight.bold),
                  ),
                  SizedBox(height: 5.0),
                  Container(
@@ -90,7 +90,7 @@ class AnswerState extends State<AnswerWidget> {
                    child: RichText(
                      softWrap: true,
                      text: TextSpan(
-                       text: '¿Qué tal te quedar el  ',
+                       text: '¿Qué tal quedar el ',
                        style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
                        children: <TextSpan>[
                          TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -108,10 +108,10 @@ class AnswerState extends State<AnswerWidget> {
          Row(
            children: <Widget>[
              FlatButton(
-               color: currentAnswer != null && currentAnswer ? Colors.green : Colors.blue,
+               color: currentAnswer != null && currentAnswer ? Colors.deepOrangeAccent : Colors.grey,
                textColor: Colors.white,
                padding: EdgeInsets.all(3.0),
-               splashColor: Colors.blueAccent,
+               splashColor: Colors.deepOrange,
                onPressed: () {
                  answerPlan(true);
                },
@@ -122,10 +122,10 @@ class AnswerState extends State<AnswerWidget> {
              ),
              SizedBox(width: 10.0),
              FlatButton(
-                 color: currentAnswer != null && !currentAnswer ? Colors.green : Colors.blue,
+                 color: currentAnswer != null && !currentAnswer ? Colors.deepOrangeAccent : Colors.grey,
                  textColor: Colors.white,
                  padding: EdgeInsets.all(3.0),
-                 splashColor: Colors.blueAccent,
+                 splashColor: Colors.deepOrange,
                  onPressed: () {
                    answerPlan(false);
                  },
