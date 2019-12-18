@@ -4,20 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Answer {
-  final int id;
+  final int plan_id;
   final DateTime date;
   final TimeOfDay time;
-  final List<Answer> anwers;
+  final bool answer;
 
-  Answer({this.id, this.date, this.time, this.anwers});
+  Answer({this.plan_id, this.date, this.time, this.answer});
 
   factory Answer.fromJson(Map<String, dynamic> json) {
     var time = json['time'].split(':');
 
     return Answer(
-        id: json['id'],
+        plan_id: json['plan_id'],
         date: DateTime.parse(json['date']),
-        time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1]))
+        time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
+        answer: json['answer']
     );
   }
 }
@@ -29,14 +30,34 @@ class AnswerWidget extends StatefulWidget {
 
   @override
   AnswerState createState() {
-    return AnswerState(answer: this.answer);
+    return AnswerState(answer: this.answer, currentAnswer: this.answer.answer);
   }
 }
 
 class AnswerState extends State<AnswerWidget> {
   Answer answer;
+  bool currentAnswer;
 
-  AnswerState({this.answer});
+  AnswerState({this.answer, this.currentAnswer});
+
+  answerPlan(bool value) {
+    if (currentAnswer != value) {
+      setState(() {
+        currentAnswer = value;
+      });
+    }
+
+    var map = new Map<String, dynamic>();
+    map["id"] = answer.plan_id;
+    map["value"] = value;
+
+    http.post('http://10.8.1.138:3000/mock/answer', body: json.encode(map)).then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if (statusCode < 200 || statusCode > 400 || json == null) {
+        throw new Exception("Error saving data");
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -64,10 +85,22 @@ class AnswerState extends State<AnswerWidget> {
                    style: TextStyle(color: Colors.grey, fontSize: 15.0, fontWeight: FontWeight.bold),
                  ),
                  SizedBox(height: 5.0),
-                 Text(
-                   '¿Qué tal te viene quedar a las 3:00?',
-                   style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
-                 ),
+                 Container(
+                   width: MediaQuery.of(context).size.width * 0.70,
+                   child: RichText(
+                     softWrap: true,
+                     text: TextSpan(
+                       text: '¿Qué tal te quedar el  ',
+                       style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
+                       children: <TextSpan>[
+                         TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
+                         TextSpan(text: ' a las '),
+                         TextSpan(text: '${answer.time.hour}:${answer.time.minute}', style: TextStyle(fontWeight: FontWeight.bold)),
+                         TextSpan(text: '?'),
+                       ],
+                     ),
+                   ),
+                 )
                ],
              )
            ],
@@ -75,12 +108,12 @@ class AnswerState extends State<AnswerWidget> {
          Row(
            children: <Widget>[
              FlatButton(
-               color: Colors.blue,
+               color: currentAnswer != null && currentAnswer ? Colors.green : Colors.blue,
                textColor: Colors.white,
                padding: EdgeInsets.all(3.0),
                splashColor: Colors.blueAccent,
                onPressed: () {
-                 /*...*/
+                 answerPlan(true);
                },
                child: Text(
                  "Sí",
@@ -89,12 +122,12 @@ class AnswerState extends State<AnswerWidget> {
              ),
              SizedBox(width: 10.0),
              FlatButton(
-                 color: Colors.blue,
+                 color: currentAnswer != null && !currentAnswer ? Colors.green : Colors.blue,
                  textColor: Colors.white,
                  padding: EdgeInsets.all(3.0),
                  splashColor: Colors.blueAccent,
                  onPressed: () {
-                   /*...*/
+                   answerPlan(false);
                  },
                  child: Text(
                    "No",

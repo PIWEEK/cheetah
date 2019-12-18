@@ -20,6 +20,16 @@ const pool = new Pool({
   user: Config.db.user,
 });
 
+router.post('/mock/answer', koaBody(), async (ctx) => {
+  console.log('answer', ctx.request.body);
+
+  ctx.status = 201;
+  ctx.body = {
+    status: 'success',
+    data:  {}
+  };
+});
+
 router.get('/mock/plan/:id', async (ctx) => {
 /*   {
     name: 'hhh',
@@ -42,25 +52,25 @@ router.get('/mock/plan/:id', async (ctx) => {
       answers: [
         {
           plan_id: 1,
-          anwer: true,
+          answer: true,
           date: '2019-12-18 23:00:00.000Z',
           time: '12:00'
         },
         {
           plan_id: 2,
-          anwer: false,
+          answer: false,
           date: '2019-12-18 23:00:00.000Z',
           time: '12:30'
         },
         {
           plan_id: 3,
-          anwer: true,
+          answer: true,
           date: '2019-12-18 23:00:00.000Z',
           time: '22:00'
         },
         {
           plan_id: 4,
-          anwer: null,
+          answer: null,
           date: '2019-12-18 23:00:00.000Z',
           time: '22:45'
         }
