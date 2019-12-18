@@ -321,9 +321,53 @@ router.put('/api/plan_persons', koaBody(), async (ctx) => {
     ctx.body = {
       status: 'error',
       data: {
-        response: error.detail
+        response: error.detail,
+      },
+    };
+  }
+});
+
+router.put('/api/plans/:id', koaBody(), async (ctx) => {
+  try {
+    const body = ctx.request.body;
+
+    await pool.query('UPDATE plan SET name = $1, description = $2, date = $3, time = $4, min_people = $5 WHERE id = $6', [body.name, body.description, body.date, body.time, body.min_people, ctx.params.id]);
+
+    const planPersons = await pool.query('SELECT * FROM plan_person WHERE plan_id = $1', [ctx.params.id]);
+    body.people.forEach( async (person: {phone: string, required: boolean}) => {
+
+      // insert to new person for this plan in plan_person table
+      if (!await isPersonInPlan(ctx.params.id, person.phone)) {
+        if (!await isPhoneInPersonTable(person.phone)) {
+          const text = 'INSERT INTO person(phone) VALUES($1)';
+          await pool.query(text, [person.phone]);
+        }
+        await pool.query('INSERT INTO plan_person(plan_id, person_phone, required_person) VALUES($1, $2, $3)', [ctx.params.id, person.phone, person.required]);
+      } else {
+        await pool.query('UPDATE plan_person SET required_person = $1 WHERE plan_id = $2 AND person_phone = $3', [person.required, ctx.params.id, person.phone]);
       }
+
+    });
+
+    planPersons.rows.forEach( async (planPerson: {planId: integer, person_phone: string, required_person: boolean, answer: boolean}) => {
+      const person = body.people.find(p => p.phone === planPerson.person_phone);
+      if (!person && !planPerson.answer) {
+        console.log('borrando');
+      }
+    });
+
+    ctx.status = 200;
+    ctx.body = {
+      status: 'success',
     }
+
+  } catch(error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail,
+      },
+    };
   }
 });
 
@@ -339,4 +383,10 @@ app
     const getPhone = await pool.query('SELECT * FROM person WHERE phone = $1', [phone]);
   
     return !!(getPhone.rowCount > 0);
+  }
+
+  async function isPersonInPlan(planId: string, phone: string) {
+    const getPersonInPlan = await pool.query('SELECT * FROM plan_person WHERE plan_id = $1 AND person_phone = $2', [planId, phone]);
+  
+    return !!(getPersonInPlan.rowCount > 0);
   }
