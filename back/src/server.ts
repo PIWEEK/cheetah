@@ -153,7 +153,7 @@ router.post('/register', koaBody(), async (ctx) => {
   }
 });
 
-router.post('/create/plan', koaBody(), async (ctx) => {
+router.post('/api/plans', koaBody(), async (ctx) => {
   try {
     const body = ctx.request.body
 
@@ -162,23 +162,29 @@ router.post('/create/plan', koaBody(), async (ctx) => {
     const plan_values = [body.name, body.description, body.date, body.time, body.min_people, body.owner_phone];
 
     const createdPlan = await pool.query(plan_text, plan_values);
-    console.log('createdPlannnnnnn ID------>', createdPlan.rows[0].id);
+    const planID = createdPlan.rows[0].id;
 
     // set owner answer
-    await pool.query('INSERT INTO plan_person(plan_id, person_phone, answer) VALUES($1, $2, $3)', [createdPlan.rows[0].id, body.owner_phone, true]);
+    await pool.query('INSERT INTO plan_person(plan_id, person_phone, answer) VALUES($1, $2, $3)', [planID, body.owner_phone, true]);
 
     //person
-    body.people.forEach( async (person: any) => {
-      // insert every person to plan_person
-      await pool.query('INSERT INTO plan_person(plan_id, person_phone, required_person) VALUES($1, $2)', [createdPlan.rows[0].id, person.phone, person.required]);
+    body.people.forEach( async (person: {phone: string, required: boolean}) => {
 
       // insert every person to person table if phone is not registered
-      // !!!!!!!!!!!!!!
-      if (!await isPhoneInPersonTable(person)) {
+      if (!await isPhoneInPersonTable(person.phone)) {
         const text = 'INSERT INTO person(phone) VALUES($1)';
-        await pool.query(text, [person]);
+        await pool.query(text, [person.phone]);
       }
+
+      // insert every person to plan_person
+      await pool.query('INSERT INTO plan_person(plan_id, person_phone, required_person) VALUES($1, $2, $3)', [planID, person.phone, person.required]);
     });
+
+    ctx.status = 201;
+    ctx.body = {
+      status: 'success'
+    }
+
   } catch(error) {
     ctx.body = {
       status: 'error',
@@ -189,7 +195,7 @@ router.post('/create/plan', koaBody(), async (ctx) => {
   }
 });
 
-router.get('/plans', async (ctx) => {
+router.get('/api/plans', async (ctx) => {
   try {
     const result = await pool.query('SELECT * FROM plan');
     ctx.body = {
@@ -207,10 +213,9 @@ router.get('/plans', async (ctx) => {
   }
 });
 
-router.get('/plan/:id', koaBody(), async (ctx) => {
+router.get('/api/plans/:id', koaBody(), async (ctx) => {
   try {
-    const body = ctx.request.body
-    const result = await pool.query('SELECT * FROM plan WHERE id = $1', [body.id]);
+    const result = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);
 
     ctx.status = 201;
     ctx.body = {
