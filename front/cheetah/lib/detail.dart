@@ -80,7 +80,8 @@ class PlanDetailState extends State<PlanDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plan')
+        title: Text('Plan'),
+        backgroundColor: Colors.deepOrange,
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),

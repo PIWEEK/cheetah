@@ -56,7 +56,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chats'),
+          backgroundColor: Colors.deepOrange,
+          title: Text('Chats'),
         actions: <Widget>[      // Add 3 lines from here...
           // IconButton(icon: Icon(Icons.add), onPressed: _create),
         ],
@@ -74,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
       ),
       floatingActionButton: new FloatingActionButton(
+        backgroundColor: Colors.deepOrange,
         child: new Icon(Icons.add),
         onPressed: _create
       ),
@@ -141,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return Scaffold(
             appBar: AppBar(
               title: Text('Crear plan'),
+              backgroundColor: Colors.deepOrange,
             ),
             body: Center(
               child: CreateForm(),
