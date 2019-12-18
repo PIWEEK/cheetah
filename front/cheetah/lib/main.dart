@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cheetah/create.dart';
+import 'package:cheetah/detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
@@ -94,8 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRow(Plan plan) {
-    print(plan.description);
-
     return ListTile(
       title: Text(
           plan.name
@@ -156,14 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Detalle'),
-            ),
-            body: Center(
-              child: Text('Detalle'),
-            ),
-          );
+          return PlanDetail();
         },
       ),
     );

@@ -20,8 +20,9 @@ const pool = new Pool({
   user: Config.db.user,
 });
 
-router.get('/mock/plan', async (ctx) => {
+router.get('/mock/plan/:id', async (ctx) => {
   ctx.status = 200;
+  console.log(ctx.params.id);
 
   ctx.body = {
     data: {
