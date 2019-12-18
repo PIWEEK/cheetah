@@ -1,20 +1,50 @@
 import 'dart:convert';
 
+import 'package:cheetah/answer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+/*
+
+      name: 'plan 1',
+      descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.',
+      date: new Date().toUTCString(),
+      time: '12:00',
+
+           plan_id: 4,
+          anwer: null,
+          date: '2019-12-18 23:00:00.000Z',
+          time: '22:45'
+ */
+
+class Answer {
+  final int id;
+  final DateTime date;
+  final TimeOfDay time;
+
+  Answer({this.id, this.date, this.time});
+}
 
 class PlanExtended {
   final int id;
   final String name;
   final String description;
+  final DateTime date;
+  final TimeOfDay time;
 
-  PlanExtended({this.id, this.name, this.description});
+  PlanExtended({this.id, this.name, this.description, this.date, this.time});
 
   factory PlanExtended.fromJson(Map<String, dynamic> json) {
+    print(json['date']);
+
+    var time = json['time'].split(':');
+
     return PlanExtended(
       id: json['id'],
       name: json['name'],
       description: json['description'],
+      date: DateTime.parse(json['date']),
+      time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1]))
     );
   }
 }
@@ -46,6 +76,27 @@ class PlanDetailState extends State<PlanDetail> {
       throw Exception('Failed to load plans');
     }
   }
+  /*
+  Widget _buildRow(answer) {
+    return ListTile(
+      title: Text(
+          plan.name
+      ),
+      subtitle: Text(
+        plan.description,
+        overflow: TextOverflow.ellipsis,
+      ),
+      onTap: _detail,
+    );
+  }*/
+
+  Widget _buildChats(List<Answer> answers) {
+    return ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemBuilder: (context, i) {
+          return Divider();
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +110,24 @@ class PlanDetailState extends State<PlanDetail> {
               future: plan,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Text("${snapshot.data.name}");
+                  return Container(
+                    padding: EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text("${snapshot.data.name}"),
+                          Text("${snapshot.data.description}"),
+                          Text("${snapshot.data.date}"),
+                          Text("${snapshot.data.time.hour}:${snapshot.data.time.minute}"),
+                          ListView.builder(
+                            padding: EdgeInsets.all(10.0),
+                            // itemBuilder: (context, index) => buildItem(index, snapshot.data.documents[index]),
+                            // itemCount: snapshot.data.answers.length,
+                            reverse: true
+                          )
+                        ]
+                      ),
+                  );
                 } else if (snapshot.hasError) {
                   return Text("${snapshot.error}");
                 }

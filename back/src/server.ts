@@ -21,6 +21,14 @@ const pool = new Pool({
 });
 
 router.get('/mock/plan/:id', async (ctx) => {
+/*   {
+    name: 'hhh',
+    description: 'vhcf',
+    date: '2019-12-18 23:00:00.000Z',
+    time: '6:44',
+    min_attendees: '5',
+    attendes: '[627263808]'
+  } */
   ctx.status = 200;
   console.log(ctx.params.id);
 
@@ -28,27 +36,33 @@ router.get('/mock/plan/:id', async (ctx) => {
     data: {
       id: 0,
       name: 'plan 1',
-      descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.',
-      date: new Date().toUTCString(),
+      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.',
+      date: '2019-12-18 23:00:00.000Z',
       time: '12:00',
       answers: [
         {
           plan_id: 1,
           anwer: true,
-          date: new Date().toUTCString(),
+          date: '2019-12-18 23:00:00.000Z',
           time: '12:00'
         },
         {
           plan_id: 2,
           anwer: false,
-          date: new Date().toUTCString(),
+          date: '2019-12-18 23:00:00.000Z',
           time: '12:30'
         },
         {
           plan_id: 3,
           anwer: true,
-          date: new Date().toUTCString(),
+          date: '2019-12-18 23:00:00.000Z',
           time: '22:00'
+        },
+        {
+          plan_id: 4,
+          anwer: null,
+          date: '2019-12-18 23:00:00.000Z',
+          time: '22:45'
         }
       ]
     }
