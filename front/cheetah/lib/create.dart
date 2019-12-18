@@ -136,37 +136,62 @@ class CreateFormState extends State<CreateForm > {
                     });
                   }
               ),
-              Text(
-                " ${_date}",
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: <Widget>[
+                   FlatButton(
+                       color: Colors.deepOrange,
+                       textColor: Colors.white,
+                       onPressed: () {
+                         _selectDate(context);
+                       },
+                       child: Text('Seleccionar fecha',)
+                   ),
+                   Text(
+                     " ${_date}",
+                     style: TextStyle(
+                         color: Colors.deepOrange,
+                         fontWeight: FontWeight.bold,
+                         fontSize: 18.0),
+                   ),
+                 ]
+             ),
               ),
-              FlatButton(
-                  onPressed: () {
-                    _selectDate(context);
-                  },
-                  child: Text('Seleccionar fecha',)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      FlatButton(
+                          color: Colors.deepOrange,
+                          textColor: Colors.white,
+                          onPressed: () {
+                            _selectTime(context);
+                          },
+                          child: Text('Seleccionar hora',)
+                      ),
+                      Text(
+                        " ${_time}",
+                        style: TextStyle(
+                            color: Colors.deepOrange,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0),
+                      ),
+                    ]
+                ),
               ),
-              Text(
-                " ${_time}",
-                style: TextStyle(
-                    color: Colors.teal,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18.0),
-              ),
-              FlatButton(
-                  onPressed: () {
-                    _selectTime(context);
-                  },
-                  child: Text('Seleccionar hora',)
-              ),
-              FlatButton(
-                  onPressed: () {
-                    getContacts();
-                  },
-                  child: Text('Invitados ${_data.phones.length}',)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: FlatButton(
+                    color: Colors.deepOrange,
+                    textColor: Colors.white,
+                    onPressed: () {
+                      getContacts();
+                    },
+                    child: Text('Invitados: ${_data.phones.length}',)
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
