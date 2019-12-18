@@ -94,9 +94,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRow(Plan plan) {
+    print(plan.description);
+
     return ListTile(
       title: Text(
           plan.name
+      ),
+      subtitle: Text(
+        plan.description,
+        overflow: TextOverflow.ellipsis,
       ),
       onTap: _detail,
     );

@@ -20,6 +20,40 @@ const pool = new Pool({
   user: Config.db.user,
 });
 
+router.get('/mock/plan', async (ctx) => {
+  ctx.status = 200;
+
+  ctx.body = {
+    data: {
+      id: 0,
+      name: 'plan 1',
+      descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.',
+      date: new Date().toUTCString(),
+      time: '12:00',
+      answers: [
+        {
+          plan_id: 1,
+          anwer: true,
+          date: new Date().toUTCString(),
+          time: '12:00'
+        },
+        {
+          plan_id: 2,
+          anwer: false,
+          date: new Date().toUTCString(),
+          time: '12:30'
+        },
+        {
+          plan_id: 3,
+          anwer: true,
+          date: new Date().toUTCString(),
+          time: '22:00'
+        }
+      ]
+    }
+  };
+});
+
 router.get('/mock/plans', async (ctx) => {
   ctx.status = 200;
 
@@ -29,22 +63,22 @@ router.get('/mock/plans', async (ctx) => {
         {
           id: 0,
           name: 'plan 1',
-          descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.'
+          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.'
         },
         {
           id: 1,
           name: 'plan 2',
-          descripcion: 'Lorem ipsum dolor sit amet.'
+          description: 'Lorem ipsum dolor sit amet.'
         },
         {
           id: 2,
           name: 'plan 3',
-          descripcion: 'Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.'
+          description: 'Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.'
         },
         {
           id: 3,
           name: 'plan 4',
-          descripcion: 'Dolor sit amet, consectetur adipiscing elit.'
+          description: 'Dolor sit amet, consectetur adipiscing elit.'
         }
       ]
     }
