@@ -352,7 +352,7 @@ router.put('/api/plans/:id', koaBody(), async (ctx) => {
     planPersons.rows.forEach( async (planPerson: {planId: integer, person_phone: string, required_person: boolean, answer: boolean}) => {
       const person = body.people.find(p => p.phone === planPerson.person_phone);
       if (!person && !planPerson.answer) {
-        console.log('borrando');
+        await pool.query('DELETE FROM plan_person WHERE plan_id = $1 AND person_phone = $2', [ctx.params.id, planPerson.person_phone]);
       }
     });
 
