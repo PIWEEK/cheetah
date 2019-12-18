@@ -213,17 +213,17 @@ router.put('/api/persons/:phone', koaBody(), async (ctx) => {
 
 router.post('/api/plans', koaBody(), async (ctx) => {
   try {
-    const body = ctx.request.body
+    const body = ctx.request.body;
 
     // insert plan
     const plan_text = 'INSERT INTO plan(name, description, date, time, min_people, owner_phone) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
     const plan_values = [body.name, body.description, body.date, body.time, body.min_people, body.owner_phone];
 
     const createdPlan = await pool.query(plan_text, plan_values);
-    const planID = createdPlan.rows[0].id;
+    const planId = createdPlan.rows[0].id;
 
     // set owner answer
-    await pool.query('INSERT INTO plan_person(plan_id, person_phone, answer) VALUES($1, $2, $3)', [planID, body.owner_phone, true]);
+    await pool.query('INSERT INTO plan_person(plan_id, person_phone, answer) VALUES($1, $2, $3)', [planId, body.owner_phone, true]);
 
     //person
     body.people.forEach( async (person: {phone: string, required: boolean}) => {
@@ -235,7 +235,7 @@ router.post('/api/plans', koaBody(), async (ctx) => {
       }
 
       // insert every person to plan_person
-      await pool.query('INSERT INTO plan_person(plan_id, person_phone, required_person) VALUES($1, $2, $3)', [planID, person.phone, person.required]);
+      await pool.query('INSERT INTO plan_person(plan_id, person_phone, required_person) VALUES($1, $2, $3)', [planId, person.phone, person.required]);
     });
 
     ctx.status = 201;
@@ -292,7 +292,7 @@ router.get('/api/plans/:id', koaBody(), async (ctx) => {
   }
 });
 
-router.delete('/api/plans/:id', koaBody(), async (ctx) => {
+router.delete('/api/plans/:id', async (ctx) => {
   try {
     await pool.query('DELETE FROM plan WHERE id = $1', [ctx.params.id]);
     ctx.status = 200;
@@ -300,7 +300,24 @@ router.delete('/api/plans/:id', koaBody(), async (ctx) => {
       status: 'success'
     }
   } catch(error) {
-    console.log('error: ', error);
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail
+      }
+    }
+  }
+});
+
+router.put('/api/plan_persons', koaBody(), async (ctx) => {
+  try {
+    const body = ctx.request.body;
+    await pool.query('UPDATE plan_person SET answer = $1 WHERE person_phone = $2 AND plan_id = $3', [body.answer, body.phone, body.planId]);
+    ctx.status = 200;
+    ctx.body = {
+      status: 'success'
+    }
+  } catch(error) {
     ctx.body = {
       status: 'error',
       data: {
