@@ -219,7 +219,7 @@ router.put('/api/persons/:phone', koaBody(), async (ctx) => {
       },
     };
   }
-});
+}); 
 
 router.post('/api/plans', koaBody(), async (ctx) => {
   try {
@@ -231,6 +231,11 @@ router.post('/api/plans', koaBody(), async (ctx) => {
 
     const createdPlan = await pool.query(plan_text, plan_values);
     const planId = createdPlan.rows[0].id;
+
+    // set parentId for plans with parent
+    if (body.parentId) {
+      await pool.query('UPDATE plan SET parentId = $1 WHERE id = $2', [body.parentId, planId]);
+    }
 
     // set owner answer
     await pool.query('INSERT INTO plan_person(plan_id, person_phone, answer) VALUES($1, $2, $3)', [planId, body.owner_phone, true]);
@@ -283,13 +288,14 @@ router.get('/api/plans', async (ctx) => {
 
 router.get('/api/plans/:id', koaBody(), async (ctx) => {
   try {
-    const result = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);
+    const parentPlan = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);
+    const alternativePlans = await pool.query('SELECT * FROM plan WHERE parentId = $1', [ctx.params.id]);
 
     ctx.status = 201;
     ctx.body = {
       status: 'success',
       data: {
-        result: result.rows[0]
+        result: [...parentPlan.rows, ...alternativePlans.rows]
       }
     }
   } catch(error) {
