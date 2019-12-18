@@ -17,34 +17,27 @@ import 'package:http/http.dart' as http;
           time: '22:45'
  */
 
-class Answer {
-  final int id;
-  final DateTime date;
-  final TimeOfDay time;
-
-  Answer({this.id, this.date, this.time});
-}
-
 class PlanExtended {
   final int id;
   final String name;
   final String description;
   final DateTime date;
   final TimeOfDay time;
+  final List<Answer> answers;
 
-  PlanExtended({this.id, this.name, this.description, this.date, this.time});
+  PlanExtended({this.id, this.name, this.description, this.date, this.time, this.answers});
 
   factory PlanExtended.fromJson(Map<String, dynamic> json) {
-    print(json['date']);
-
     var time = json['time'].split(':');
+    List<dynamic> answers = json['answers'];
 
     return PlanExtended(
       id: json['id'],
       name: json['name'],
       description: json['description'],
       date: DateTime.parse(json['date']),
-      time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1]))
+      time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
+      answers: answers.map((anwer) => Answer.fromJson(anwer)).toList()
     );
   }
 }
@@ -76,26 +69,11 @@ class PlanDetailState extends State<PlanDetail> {
       throw Exception('Failed to load plans');
     }
   }
-  /*
-  Widget _buildRow(answer) {
-    return ListTile(
-      title: Text(
-          plan.name
-      ),
-      subtitle: Text(
-        plan.description,
-        overflow: TextOverflow.ellipsis,
-      ),
-      onTap: _detail,
-    );
-  }*/
 
-  Widget _buildChats(List<Answer> answers) {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          return Divider();
-        });
+  Widget _buildRow(Answer answer) {
+    return AnswerWidget(
+        answer: answer
+    );
   }
 
   @override
@@ -104,38 +82,25 @@ class PlanDetailState extends State<PlanDetail> {
       appBar: AppBar(
         title: Text('Plan')
       ),
-      body: Center(
-          child: Container(
-            child: FutureBuilder<PlanExtended>(
-              future: plan,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Container(
-                    padding: EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("${snapshot.data.name}"),
-                          Text("${snapshot.data.description}"),
-                          Text("${snapshot.data.date}"),
-                          Text("${snapshot.data.time.hour}:${snapshot.data.time.minute}"),
-                          ListView.builder(
-                            padding: EdgeInsets.all(10.0),
-                            // itemBuilder: (context, index) => buildItem(index, snapshot.data.documents[index]),
-                            // itemCount: snapshot.data.answers.length,
-                            reverse: true
-                          )
-                        ]
-                      ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text("${snapshot.error}");
-                }
+      body: Container(
+        padding: EdgeInsets.all(10.0),
+        child: FutureBuilder<PlanExtended>(
+          future: plan,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemBuilder: (context, index) => _buildRow(snapshot.data.answers[index]),
+                itemCount: snapshot.data.answers.length,
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+              );
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
 
-                return CircularProgressIndicator();
-              },
-            ),
-          )
+            return CircularProgressIndicator();
+          },
+        )
       ),
     );
   }
