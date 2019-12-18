@@ -21,6 +21,7 @@ class _EventData {
   DateTime date = null;
   TimeOfDay time = null;
   int min_attendees = 0;
+  List<String> phones = [];
 }
 
 class CreateFormState extends State<CreateForm > {
@@ -67,13 +68,10 @@ class CreateFormState extends State<CreateForm > {
     setState(() {});
   }
 
-  void getContacts() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) {
-          return Contacts();
-        },
-      ),
+  void getContacts() async {
+    _data.phones = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Contacts()),
     );
   }
 
@@ -170,7 +168,7 @@ class CreateFormState extends State<CreateForm > {
                   onPressed: () {
                     getContacts();
                   },
-                  child: Text('Invitados',)
+                  child: Text('Invitados ${_data.phones.length}',)
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -186,6 +184,7 @@ class CreateFormState extends State<CreateForm > {
                       map["date"] = _data.date.toUtc().toString();
                       map["time"] = '${_data.time.hour}:${_data.time.minute}';
                       map["min_attendees"] = _data.min_attendees.toString();
+                      map["attendes"] = _data.phones.toString();
 
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text('Envíando datos')));

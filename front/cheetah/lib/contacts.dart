@@ -64,11 +64,19 @@ class ContactsState extends State<Contacts> {
 
   @override
   Widget build(BuildContext context) {
-    print('sdfdsfsf');
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Seleccionar invitados'),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context, _saved.toList());
+              }
+            );
+          },
+        ),
       ),
       body: Center(
         child: Container(

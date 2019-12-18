@@ -56,10 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Chats'),
         actions: <Widget>[      // Add 3 lines from here...
-          IconButton(icon: Icon(Icons.add), onPressed: _create),
+          // IconButton(icon: Icon(Icons.add), onPressed: _create),
         ],
       ),
       body: _buildChats(),
+      floatingActionButton: new FloatingActionButton(
+        child: new Icon(Icons.add),
+        onPressed: _create
+      ),
     );
   }
 
