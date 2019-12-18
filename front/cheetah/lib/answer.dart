@@ -105,7 +105,7 @@ class AnswerState extends State<AnswerWidget> {
              )
            ],
          ),
-         Row(
+          Row(
            children: <Widget>[
              FlatButton(
                color: currentAnswer != null && currentAnswer ? Colors.deepOrangeAccent : Colors.grey,
@@ -135,7 +135,53 @@ class AnswerState extends State<AnswerWidget> {
                  )
              )
            ],
-         )
+         ),
+         Column(
+             crossAxisAlignment: CrossAxisAlignment.start,
+             children: <Widget>[
+               Text('¿Cuando te gustaria quedar?'),
+               Padding(
+                 padding: const EdgeInsets.symmetric(vertical: 4.0),
+                 child: Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: <Widget>[
+                       FlatButton(
+                           color: Colors.deepOrange,
+                           textColor: Colors.white,
+                           onPressed: () {
+                           },
+                           child: Text('Seleccionar fecha',)
+                       ),
+                     ]
+                 ),
+               ),
+               Padding(
+                 padding: const EdgeInsets.only(top: 0),
+                 child: Row(
+                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                     children: <Widget>[
+                       FlatButton(
+                           color: Colors.deepOrange,
+                           textColor: Colors.white,
+                           onPressed: () {
+                           },
+                           child: Text('Seleccionar hora',)
+                       ),
+                     ]
+                 ),
+               ),
+               Padding(
+                 padding: const EdgeInsets.only(top: 0),
+                 child: FlatButton(
+                     color: Colors.deepOrange,
+                     textColor: Colors.white,
+                     onPressed: () {
+                     },
+                     child: Text('Invitados: 0',)
+                 ),
+               ),
+             ]
+         ),
        ]
      )
     );

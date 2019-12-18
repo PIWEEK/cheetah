@@ -31,7 +31,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'Cheetah',
-        home: MyHomePage()
+        home: MyHomePage(),
+        theme: ThemeData(
+          primaryColor: Colors.deepOrange,
+          accentColor: Colors.deepOrangeAccent
+        )
     );
   }
 }
