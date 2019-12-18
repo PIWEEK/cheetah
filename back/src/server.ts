@@ -258,7 +258,7 @@ router.get('/api/plans', async (ctx) => {
     const result = await pool.query('SELECT * FROM plan');
     ctx.body = {
       data: {
-        result: result.rows[0]
+        result: result.rows
       }
     }
   } catch(error) {
@@ -283,6 +283,24 @@ router.get('/api/plans/:id', koaBody(), async (ctx) => {
       }
     }
   } catch(error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail
+      }
+    }
+  }
+});
+
+router.delete('/api/plans/:id', koaBody(), async (ctx) => {
+  try {
+    await pool.query('DELETE FROM plan WHERE id = $1', [ctx.params.id]);
+    ctx.status = 200;
+    ctx.body = {
+      status: 'success'
+    }
+  } catch(error) {
+    console.log('error: ', error);
     ctx.body = {
       status: 'error',
       data: {
