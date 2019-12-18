@@ -123,33 +123,77 @@ router.get('/', async (ctx) => {
   };
 });
 
-router.post('/register', koaBody(), async (ctx) => {
+router.get('/api/persons/:phone', koaBody(), async (ctx) => {
+  try {
+    const result = await pool.query('SELECT * FROM person WHERE phone = $1', [ctx.params.phone]);
+
+    ctx.status = 201;
+    ctx.body = {
+      status: 'success',
+      data: {
+        result: result.rows[0],
+      },
+    };
+  } catch (error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail,
+      },
+    };
+  }
+});
+
+router.post('/api/persons', koaBody(), async (ctx) => {
   try {
     let res;
     const body = ctx.request.body;
-    const owner_values = [body.name, body.phone];
-    if(await isPhoneInPersonTable(body.phone)) {
-      res = await pool.query('UPDATE person SET name = $1 WHERE phone = $2', owner_values);
+    const ownerValues = [body.name, body.phone];
+    if (await isPhoneInPersonTable(body.phone)) {
+      res = await pool.query('UPDATE person SET name = $1 WHERE phone = $2', ownerValues);
     } else {
-      const owner_text = 'INSERT INTO person(name, phone) VALUES($1, $2) RETURNING *';
-      res = await pool.query(owner_text, owner_values);
-  
+      const ownerText = 'INSERT INTO person(name, phone) VALUES($1, $2) RETURNING *';
+      res = await pool.query(ownerText, ownerValues);
+
       ctx.status = 201;
     }
 
     ctx.body = {
       status: 'success',
       data: {
-        response: res.rows[0]
-      }
-    }
+        response: res.rows[0],
+      },
+    };
   } catch (error) {
     ctx.body = {
       status: 'error',
       data: {
-        response: error.detail
-      }
-    }
+        response: error.detail,
+      },
+    };
+  }
+});
+
+router.put('/api/persons/:phone', koaBody(), async (ctx) => {
+  try {
+    let res;
+    const body = ctx.request.body;
+
+    res = await pool.query('UPDATE person SET name = $1 WHERE phone = $2', [body.name, ctx.params.phone]);
+
+    ctx.body = {
+      status: 'success',
+      data: {
+        response: res.rows[0],
+      },
+    };
+  } catch (error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail,
+      },
+    };
   }
 });
 
