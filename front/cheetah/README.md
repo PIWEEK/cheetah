@@ -1,6 +1,6 @@
 # cheetah
 
-Cheetah
+cheetah
 
 ## Getting Started
 
