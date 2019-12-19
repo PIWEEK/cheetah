@@ -405,6 +405,24 @@ router.put('/api/plan_persons', koaBody(), async (ctx) => {
   }
 });
 
+router.put('/api/deactivate_plan/:id', koaBody(), async (ctx) => {
+  try {
+    await pool.query('UPDATE plan SET is_active = $1 WHERE id = $2', [false, ctx.params.id]);
+
+    ctx.status = 200;
+    ctx.body = {
+      status: 'success'
+    };
+  } catch (error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail,
+      },
+    };
+  }
+});
+
 router.put('/api/plans/:id', koaBody(), async (ctx) => {
   try {
     const body = ctx.request.body;

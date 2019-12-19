@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS plan (
   min_people INTEGER,
   owner_phone VARCHAR(14),
   parentId INTEGER DEFAULT NULL,
+  is_active BOOLEAN DEFAULT true,
   FOREIGN KEY (owner_phone) REFERENCES person(phone)
 );
 
