@@ -243,11 +243,11 @@ router.put('/api/persons/:phone', koaBody(), async (ctx) => {
 router.post('/api/plans', koaBody(), async (ctx) => {
   try {
     const body = ctx.request.body;
-
+    console.log('-----------');
+    console.log(body);
     // insert plan
     const plan_text = 'INSERT INTO plan(name, description, date, time, min_people, owner_phone) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
     const plan_values = [body.name, body.description, body.date, body.time, body.min_people, body.owner_phone];
-
     const createdPlan = await pool.query(plan_text, plan_values);
     const planId = createdPlan.rows[0].id;
 
@@ -263,7 +263,7 @@ router.post('/api/plans', koaBody(), async (ctx) => {
     body.people.forEach( async (person: {phone: string, required: boolean}) => {
 
       // insert every person to person table if phone is not registered
-      if (!await isPhoneInPersonTable(person.phone)) {
+      if (!await isPhoneInPersonTable(person.phone.trim())) {
         const text = 'INSERT INTO person(phone) VALUES($1)';
         await pool.query(text, [person.phone]);
       }
@@ -278,6 +278,8 @@ router.post('/api/plans', koaBody(), async (ctx) => {
     }
 
   } catch(error) {
+    console.log(error);
+    
     ctx.body = {
       status: 'error',
       data: {
@@ -384,8 +386,8 @@ router.put('/api/plans/:id', koaBody(), async (ctx) => {
 
     });
 
-    planPersons.rows.forEach( async (planPerson: {planId: integer, person_phone: string, required_person: boolean, answer: boolean}) => {
-      const person = body.people.find(p => p.phone === planPerson.person_phone);
+    planPersons.rows.forEach( async (planPerson: {planId: number, person_phone: string, required_person: boolean, answer: boolean}) => {
+      const person = body.people.find((p: any) => p.phone === planPerson.person_phone);
       if (!person && !planPerson.answer) {
         await pool.query('DELETE FROM plan_person WHERE plan_id = $1 AND person_phone = $2', [ctx.params.id, planPerson.person_phone]);
       }

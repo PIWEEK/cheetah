@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer';
+import './appconfig.dart';
 
 // https://medium.com/flutterpub/sample-form-part-1-flutter-35664d57b0e5
 
@@ -35,8 +36,8 @@ class CreateFormState extends State<CreateForm > {
   final DateTime selectedDate = null;
   final TimeOfDay selectedTime = null;
 
-  Future createPost({Map body}) async {
-    return http.post('http://10.8.1.138:3000/mock/create', body: body).then((http.Response response) {
+  Future createPost({String body}) async {
+    return http.post('http://10.8.1.138:3000/api/plans', body: body, headers: {'Content-Type': 'application/json'}).then((http.Response response) {
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400 || json == null) {
         throw new Exception("Error saving data");
@@ -201,20 +202,34 @@ class CreateFormState extends State<CreateForm > {
                       requestInProgress = true;
                       _formKey.currentState.save();
 
-                      var map = new Map<String, dynamic>();
-                      map["name"] = _data.name;
-                      map["description"] = _data.description;
-                      map["date"] = _data.date.toUtc().toString();
-                      map["time"] = '${_data.time.hour}:${_data.time.minute}';
-                      map["min_attendees"] = _data.min_attendees.toString();
-                      map["attendes"] = _data.phones.toString();
+                      print(_data.phones.map((phone) {
+                        return {
+                          'required': false,
+                          'phone': phone
+                        };
+                      }));
+
+                      String map = jsonEncode({
+                        'name': _data.name,
+                        'description': _data.description,
+                        'date': '${_data.date.year}-${_data.date.month}-${_data.date.day}',
+                        'time': '${_data.time.hour}:${_data.time.minute}',
+                        'min_people': _data.min_attendees,
+                        'people': _data.phones.map((phone) {
+                          return {
+                            'required': false,
+                            'phone': phone
+                          };
+                        }).toList(),
+                        'owner_phone': appData.phone
+                      });
 
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text('Envíando datos')));
 
                       var p = await createPost(body: map);
                       requestInProgress = false;
-
+                      Navigator.pop(context);
                       print('Respuesta: ${p['data']['name']}');
                     }
                   },

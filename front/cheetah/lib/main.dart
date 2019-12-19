@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
+import './appconfig.dart';
 
 void main() => runApp(MyApp());
 
@@ -54,6 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _checkPermissions();
     plans = fetchPlans();
+    registerUser();
   }
 
   @override
@@ -113,6 +115,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void registerUser() {
+    String body = jsonEncode({
+      'name': appData.name,
+      'phone': appData.phone
+    });
+
+    http.post('http://10.8.1.138:3000/api/persons', body: body, headers: {'Content-Type': 'application/json'});
+  }
+
   Future<List<Plan>> fetchPlans() async {
     final response = await http.get('http://10.8.1.138:3000/mock/plans');
 
@@ -140,8 +151,8 @@ class _MyHomePageState extends State<MyHomePage> {
     await requestContactsPermission();
   }
 
-  void _create() {
-    Navigator.of(context).push(
+  void _create() async {
+    await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return Scaffold(
@@ -156,6 +167,10 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
+
+    setState(() {
+      plans = fetchPlans();
+    });
   }
 
   void _detail() {
