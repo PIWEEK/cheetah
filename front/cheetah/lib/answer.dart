@@ -44,10 +44,6 @@ class PlanExtended {
 
     answers = answers.map((anwer) => Answer.fromJson(anwer)).toList();
 
-    print('dates');
-    print(int.parse(time[0]));
-    print(int.parse(time[1]));
-
     return PlanExtended(
         id: int.parse(json['id']),
         name: json['name'],

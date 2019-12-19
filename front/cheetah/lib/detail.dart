@@ -65,7 +65,6 @@ class PlanDetailState extends State<PlanDetail> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<Answer> userAnsers = snapshot.data.answers.where((Answer answer) {
-                print(answer.phone);
                 return answer.phone == appData.phone;
               }).toList();
 

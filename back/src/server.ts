@@ -324,15 +324,22 @@ router.get('/api/plans', async (ctx) => {
 
 router.get('/api/user-plans/:user', async (ctx) => {
   try {
+    const resultWithoutParent = await pool.query(`
+    SELECT plan_person.*, plan_person_plan.name, plan_person_plan.description, plan_person_plan.id FROM plan_person
+    INNER JOIN plan plan_person_plan ON plan_person_plan.id = plan_person.plan_id
+    WHERE person_phone = $1 AND plan_person_plan.parentid IS NULL AND NOT owner_phone=$1
+    `, [ctx.params.user]);
+
     const result = await pool.query(`
-    SELECT plan_person.*, parent_plan.name, parent_plan.description, parent_plan.id FROM plan_person
+    SELECT plan_person.*, parent_plan.name, parent_plan.description, parent_plan.id, parent_plan.owner_phone FROM plan_person
     INNER JOIN plan plan_person_plan ON plan_person_plan.id = plan_person.plan_id
     INNER JOIN plan parent_plan ON parent_plan.id = plan_person_plan.parentid
-    WHERE person_phone = $1 AND plan_person_plan.parentid IS NOT NULL
+    WHERE person_phone = $1 AND plan_person_plan.parentid IS NOT NULL AND answer IS NULL
     `, [ctx.params.user]);
+
     ctx.body = {
       data: {
-        result: result.rows
+        result: [...resultWithoutParent.rows, ...result.rows]
       }
     }
   } catch(error) {

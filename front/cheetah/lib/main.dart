@@ -191,6 +191,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _detail(int planId) {
+    print('IR a plan');
+    print(planId);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {

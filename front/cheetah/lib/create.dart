@@ -218,7 +218,8 @@ class CreateFormState extends State<CreateForm > {
                         'people': _data.phones.map((phone) {
                           return {
                             'required': false,
-                            'phone': phone
+                            // 'phone': phone
+                            'phone': '600000002'
                           };
                         }).toList(),
                         'owner_phone': appData.phone
