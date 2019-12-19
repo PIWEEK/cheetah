@@ -342,17 +342,37 @@ router.get('/api/plans/:user', async (ctx) => {
 
 router.get('/api/plans/:id', koaBody(), async (ctx) => {
   try {
-    const parentPlan = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);
-    const alternativePlans = await pool.query('SELECT * FROM plan WHERE parentId = $1', [ctx.params.id]);
+    let parentPlan: any = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);
+    const alternativePlans: any = await pool.query('SELECT * FROM plan WHERE parentId = $1', [ctx.params.id]);
+
+    /* select t1.name, t2.image_id, t3.path
+    from table1 t1 inner join table2 t2 on t1.person_id = t2.person_id
+    inner join table3 t3 on t2.image_id=t3.image_id */
+
+    const answersPlan = await pool.query('SELECT answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time FROM plan plan inner join plan_person answer on plan.id = answer.plan_id WHERE id = $1', [ctx.params.id]);
+
+    parentPlan = parentPlan.rows[0];
+    parentPlan.answers = answersPlan.rows;
+
+    await alternativePlans.rows.forEach( async (alternativePlan: {id: number}, index: number) => {
+      const answersAlternativePlan = await pool.query('SELECT answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time FROM plan plan inner join plan_person answer on plan.id = answer.plan_id WHERE id = $1', [alternativePlan.id]);
+
+      alternativePlans.rows[index].answers = answersAlternativePlan.rows;
+      console.log('answersAlternativePlan.rows', answersAlternativePlan.rows);
+
+    });
+
+    console.log('alternativePlans', alternativePlans.rows);
 
     ctx.status = 201;
     ctx.body = {
       status: 'success',
       data: {
-        result: [...parentPlan.rows, ...alternativePlans.rows]
+        result: [parentPlan, ...alternativePlans.rows]
       }
     }
   } catch(error) {
+    console.log(error);
     ctx.body = {
       status: 'error',
       data: {
@@ -420,7 +440,11 @@ router.put('/api/plans/:id', koaBody(), async (ctx) => {
     });
 
     planPersons.rows.forEach( async (planPerson: {planId: number, person_phone: string, required_person: boolean, answer: boolean}) => {
+<<<<<<< HEAD
       const person = body.people.find((p: any) => p.phone === planPerson.person_phone);
+=======
+      const person = body.people.find((p: {phone: string, required: boolean}) => p.phone === planPerson.person_phone);
+>>>>>>> Add answers to get plan by id
       if (!person && !planPerson.answer) {
         await pool.query('DELETE FROM plan_person WHERE plan_id = $1 AND person_phone = $2', [ctx.params.id, planPerson.person_phone]);
       }
