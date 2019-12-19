@@ -325,7 +325,7 @@ router.get('/api/plans', async (ctx) => {
 router.get('/api/user-plans/:user', async (ctx) => {
   try {
     const result = await pool.query(`
-    SELECT plan_person.*, parent_plan.name FROM plan_person
+    SELECT plan_person.*, parent_plan.name, parent_plan.description, parent_plan.id FROM plan_person
     INNER JOIN plan plan_person_plan ON plan_person_plan.id = plan_person.plan_id
     INNER JOIN plan parent_plan ON parent_plan.id = plan_person_plan.parentid
     WHERE person_phone = $1 AND plan_person_plan.parentid IS NOT NULL
