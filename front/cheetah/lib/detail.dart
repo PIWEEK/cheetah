@@ -7,31 +7,6 @@ import 'package:http/http.dart' as http;
 
 import './appconfig.dart';
 
-class PlanExtended {
-  final int id;
-  final String name;
-  final String description;
-  final DateTime date;
-  final TimeOfDay time;
-  final List<Answer> answers;
-
-  PlanExtended({this.id, this.name, this.description, this.date, this.time, this.answers});
-
-  factory PlanExtended.fromJson(Map<String, dynamic> json) {
-    var time = json['time'].split(':');
-    List<dynamic> answers = json['answers'];
-
-    return PlanExtended(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      date: DateTime.parse(json['date']),
-      time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
-      answers: answers.map((anwer) => Answer.fromJson(anwer)).toList()
-    );
-  }
-}
-
 class PlanDetail extends StatefulWidget {
   @override
   PlanDetailState createState() {
@@ -41,6 +16,7 @@ class PlanDetail extends StatefulWidget {
 
 class PlanDetailState extends State<PlanDetail> {
   Future<PlanExtended> plan;
+  PlanExtended _plan;
 
   @override
   void initState() {
@@ -56,7 +32,10 @@ class PlanDetailState extends State<PlanDetail> {
     final response = await http.get('http://10.8.1.138:3000/mock/plan/$id');
 
     if (response.statusCode == 200) {
-      return PlanExtended.fromJson(jsonDecode(response.body)['data']);
+      setState(() {});
+      _plan = PlanExtended.fromJson(jsonDecode(response.body)['data']);
+
+      return _plan;
     } else {
       throw Exception('Failed to load plans');
     }
@@ -64,7 +43,8 @@ class PlanDetailState extends State<PlanDetail> {
 
   Widget _buildRow(Answer answer) {
     return AnswerWidget(
-        answer: answer
+      plan: _plan,
+      answer: answer
     );
   }
 
@@ -72,7 +52,7 @@ class PlanDetailState extends State<PlanDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plan'),
+        title: Text(_plan == null ? 'Plan' : _plan.name),
         backgroundColor: Colors.deepOrange,
       ),
       body: Container(
@@ -82,7 +62,6 @@ class PlanDetailState extends State<PlanDetail> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               int lastIndex = snapshot.data.answers.length;
-
               return ListView.builder(
                 itemBuilder: (context, index) {
                   if (index == lastIndex) {

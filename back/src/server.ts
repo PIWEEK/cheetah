@@ -48,8 +48,16 @@ router.get('/mock/plan/:id', async (ctx) => {
       name: 'plan 1',
       description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.',
       date: '2019-12-18 23:00:00.000Z',
+      author: 'Pepe',
       time: '12:00',
       answers: [
+        {
+          plan_id: 0,
+          answer: null,
+          date: '2019-12-18 23:00:00.000Z',
+          time: '22:45',
+          phone: 60000001
+        },
         {
           plan_id: 1,
           answer: true,

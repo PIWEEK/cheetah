@@ -23,22 +23,53 @@ class Answer {
   }
 }
 
+class PlanExtended {
+  final int id;
+  final String name;
+  final String description;
+  final String author;
+  final DateTime date;
+  final TimeOfDay time;
+  final List<Answer> answers;
+
+  PlanExtended({this.id, this.name, this.description, this.date, this.time, this.answers, this.author});
+
+  factory PlanExtended.fromJson(Map<String, dynamic> json) {
+    var time = json['time'].split(':');
+    List<dynamic> answers = json['answers'];
+
+    answers = answers.map((anwer) => Answer.fromJson(anwer)).toList();
+
+    return PlanExtended(
+        id: json['id'],
+        name: json['name'],
+        description: json['description'],
+        author: json['author'],
+        date: DateTime.parse(json['date']),
+        time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
+        answers: answers
+    );
+  }
+}
+
 class AnswerWidget extends StatefulWidget {
   final Answer answer;
+  final PlanExtended plan;
 
-  AnswerWidget({this.answer});
+  AnswerWidget({this.answer, this.plan});
 
   @override
   AnswerState createState() {
-    return AnswerState(answer: this.answer, currentAnswer: this.answer.answer);
+    return AnswerState(plan: this.plan, answer: this.answer, currentAnswer: this.answer.answer);
   }
 }
 
 class AnswerState extends State<AnswerWidget> {
   Answer answer;
   bool currentAnswer;
+  PlanExtended plan;
 
-  AnswerState({this.answer, this.currentAnswer});
+  AnswerState({this.plan, this.answer, this.currentAnswer});
 
   answerPlan(bool value) {
     if (currentAnswer != value) {
@@ -57,6 +88,54 @@ class AnswerState extends State<AnswerWidget> {
         throw new Exception("Error saving data");
       }
     });
+  }
+
+  Widget _question() {
+    if (plan.id != answer.plan_id) {
+      return RichText(
+        softWrap: true,
+        text: TextSpan(
+          text: '¿Qué tal quedar el ',
+          style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
+          children: <TextSpan>[
+            TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: ' a las '),
+            TextSpan(text: '${answer.time.hour}:${answer.time.minute}', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: '?'),
+          ],
+        ),
+      );
+    }
+
+    return RichText(
+      softWrap: true,
+      text: TextSpan(
+        text: '',
+        style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
+        children: <TextSpan>[
+          TextSpan(text: plan.author, style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: ' ha propuesto un plan con la siguiente descripción:'),
+          const TextSpan(
+            text: '\n',
+          ),
+          const TextSpan(
+            text: '\n',
+          ),
+          TextSpan(text: plan.description),
+          const TextSpan(
+            text: '\n',
+          ),
+          const TextSpan(
+            text: '\n',
+          ),
+          TextSpan(text: '¿Qué tal quedar el '),
+          TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: ' a las '),
+          TextSpan(text: '${answer.time.hour}:${answer.time.minute}', style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: '?'),
+        ],
+      ),
+    );
   }
 
   @override
@@ -87,24 +166,13 @@ class AnswerState extends State<AnswerWidget> {
                  SizedBox(height: 5.0),
                  Container(
                    width: MediaQuery.of(context).size.width * 0.70,
-                   child: RichText(
-                     softWrap: true,
-                     text: TextSpan(
-                       text: '¿Qué tal quedar el ',
-                       style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
-                       children: <TextSpan>[
-                         TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
-                         TextSpan(text: ' a las '),
-                         TextSpan(text: '${answer.time.hour}:${answer.time.minute}', style: TextStyle(fontWeight: FontWeight.bold)),
-                         TextSpan(text: '?'),
-                       ],
-                     ),
-                   ),
+                   child: _question()
                  )
                ],
              )
            ],
          ),
+         SizedBox(height: 5.0),
           Row(
            children: <Widget>[
              FlatButton(
@@ -136,42 +204,6 @@ class AnswerState extends State<AnswerWidget> {
              )
            ],
          ),
-         /*Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: <Widget>[
-               Text('¿Cuando te gustaria quedar?'),
-               Padding(
-                 padding: const EdgeInsets.symmetric(vertical: 4.0),
-                 child: Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: <Widget>[
-                       FlatButton(
-                           color: Colors.deepOrange,
-                           textColor: Colors.white,
-                           onPressed: () {
-                           },
-                           child: Text('Seleccionar fecha',)
-                       ),
-                     ]
-                 ),
-               ),
-               Padding(
-                 padding: const EdgeInsets.only(top: 0),
-                 child: Row(
-                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                     children: <Widget>[
-                       FlatButton(
-                           color: Colors.deepOrange,
-                           textColor: Colors.white,
-                           onPressed: () {
-                           },
-                           child: Text('Seleccionar hora',)
-                       ),
-                     ]
-                 ),
-               ),
-             ]
-         ),*/
        ]
      )
     );
