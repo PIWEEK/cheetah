@@ -305,19 +305,7 @@ router.get('/api/plans', async (ctx) => {
   }
 });
 
-/*
-SELECT companies.permalink AS companies_permalink,
-       companies.name AS companies_name,
-       acquisitions.company_permalink AS acquisitions_permalink,
-       acquisitions.acquired_at AS acquired_date
-  FROM tutorial.crunchbase_companies companies
-  LEFT JOIN tutorial.crunchbase_acquisitions acquisitions
-    ON companies.permalink = acquisitions.company_permalink
- WHERE acquisitions.company_permalink != '/company/1000memories'
-    OR acquisitions.company_permalink IS NULL
- ORDER BY 1*/
-
-router.get('/api/plans/:user', async (ctx) => {
+router.get('/api/:user', async (ctx) => {
   try {
     const result = await pool.query(`
     SELECT * FROM plan_person
@@ -440,11 +428,7 @@ router.put('/api/plans/:id', koaBody(), async (ctx) => {
     });
 
     planPersons.rows.forEach( async (planPerson: {planId: number, person_phone: string, required_person: boolean, answer: boolean}) => {
-<<<<<<< HEAD
-      const person = body.people.find((p: any) => p.phone === planPerson.person_phone);
-=======
       const person = body.people.find((p: {phone: string, required: boolean}) => p.phone === planPerson.person_phone);
->>>>>>> Add answers to get plan by id
       if (!person && !planPerson.answer) {
         await pool.query('DELETE FROM plan_person WHERE plan_id = $1 AND person_phone = $2', [ctx.params.id, planPerson.person_phone]);
       }
