@@ -19,7 +19,7 @@ class Plan {
 
   factory Plan.fromJson(Map<String, dynamic> json) {
     return Plan(
-      id: json['id'],
+      id: int.parse(json['id']),
       name: json['name'],
       description: json['description'],
     );
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<List<Plan>> fetchPlans() async {
-    final response = await http.get('http://10.8.1.138:3000/mock/plans');
+    final response = await http.get('http://10.8.1.138:3000/api/plans/${appData.phone}');
 
     if (response.statusCode == 200) {
       List<dynamic> plans = jsonDecode(response.body)['data']['result'];

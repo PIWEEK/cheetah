@@ -227,10 +227,9 @@ class CreateFormState extends State<CreateForm > {
                       Scaffold.of(context)
                           .showSnackBar(SnackBar(content: Text('Envíando datos')));
 
-                      var p = await createPost(body: map);
+                      await createPost(body: map);
                       requestInProgress = false;
                       Navigator.pop(context);
-                      print('Respuesta: ${p['data']['name']}');
                     }
                   },
                   child: Text('Enviar'),

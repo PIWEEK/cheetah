@@ -243,8 +243,6 @@ router.put('/api/persons/:phone', koaBody(), async (ctx) => {
 router.post('/api/plans', koaBody(), async (ctx) => {
   try {
     const body = ctx.request.body;
-    console.log('-----------');
-    console.log(body);
     // insert plan
     const plan_text = 'INSERT INTO plan(name, description, date, time, min_people, owner_phone) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
     const plan_values = [body.name, body.description, body.date, body.time, body.min_people, body.owner_phone];
@@ -263,7 +261,7 @@ router.post('/api/plans', koaBody(), async (ctx) => {
     body.people.forEach( async (person: {phone: string, required: boolean}) => {
 
       // insert every person to person table if phone is not registered
-      if (!await isPhoneInPersonTable(person.phone.trim())) {
+      if (!await isPhoneInPersonTable(person.phone)) {
         const text = 'INSERT INTO person(phone) VALUES($1)';
         await pool.query(text, [person.phone]);
       }
@@ -298,6 +296,41 @@ router.get('/api/plans', async (ctx) => {
       }
     }
   } catch(error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        response: error.detail
+      }
+    }
+  }
+});
+
+/*
+SELECT companies.permalink AS companies_permalink,
+       companies.name AS companies_name,
+       acquisitions.company_permalink AS acquisitions_permalink,
+       acquisitions.acquired_at AS acquired_date
+  FROM tutorial.crunchbase_companies companies
+  LEFT JOIN tutorial.crunchbase_acquisitions acquisitions
+    ON companies.permalink = acquisitions.company_permalink
+ WHERE acquisitions.company_permalink != '/company/1000memories'
+    OR acquisitions.company_permalink IS NULL
+ ORDER BY 1*/
+
+router.get('/api/plans/:user', async (ctx) => {
+  try {
+    const result = await pool.query(`
+    SELECT * FROM plan_person
+    LEFT JOIN plan ON plan.id = plan_person.plan_id
+    WHERE person_phone = $1
+    `, [ctx.params.user]);
+    ctx.body = {
+      data: {
+        result: result.rows
+      }
+    }
+  } catch(error) {
+    console.log(error);
     ctx.body = {
       status: 'error',
       data: {
