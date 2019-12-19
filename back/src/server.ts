@@ -328,6 +328,26 @@ router.get('/api/:user', async (ctx) => {
   }
 });
 
+// my plans
+router.get('/api/plans/user/:phone', koaBody(), async (ctx) => {
+  try {
+    const result = await pool.query('SELECT * FROM plan WHERE owner_phone = $1', [ctx.params.phone]);
+    ctx.status = 200;
+    ctx.body = {
+      data: {
+        result: result.rows
+      }
+    }
+  } catch(error) {
+    ctx.body = {
+      status: 'error',
+      data: {
+        result: error.detail
+      }
+    }
+  }
+});
+
 router.get('/api/plans/:id', koaBody(), async (ctx) => {
   try {
     let parentPlan: any = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);

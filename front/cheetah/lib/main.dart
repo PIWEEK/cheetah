@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cheetah/create.dart';
+import 'package:cheetah/plans.dart';
 import 'package:cheetah/detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer';
@@ -66,6 +67,13 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text('Chats'),
         actions: <Widget>[      // Add 3 lines from here...
           // IconButton(icon: Icon(Icons.add), onPressed: _create),
+          FlatButton(
+            textColor: Colors.white,
+            child: Text(
+              "Mis planes",
+            ),
+            onPressed: _myPlans,
+          )
         ],
       ),
       body: FutureBuilder<List<Plan>>(
@@ -78,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
             }
 
             return CircularProgressIndicator();
-          }
+          },
       ),
       floatingActionButton: new FloatingActionButton(
         backgroundColor: Colors.deepOrange,
@@ -92,8 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
-          if (i.isOdd) return Divider();
-
           final index = i ~/ 2;
 
           if (index < plans.length) {
@@ -103,15 +109,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRow(Plan plan) {
-    return ListTile(
-      title: Text(
-          plan.name
-      ),
-      subtitle: Text(
-        plan.description,
-        overflow: TextOverflow.ellipsis,
-      ),
-      onTap: _detail,
+    return Card(
+        child: Padding(
+            padding: EdgeInsets.all(5.0),
+            child: ListTile(
+              title: Text(
+                  plan.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16.0,
+                  )
+              ),
+              subtitle: Text(
+                  plan.description,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    height: 2,
+                  )
+              ),
+              onTap: _detail,
+            )
+        )
     );
   }
 
@@ -178,6 +197,16 @@ class _MyHomePageState extends State<MyHomePage> {
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
           return PlanDetail();
+        },
+      ),
+    );
+  }
+
+  void _myPlans() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return MyPlans();
         },
       ),
     );
