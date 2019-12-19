@@ -8,15 +8,22 @@ import 'package:http/http.dart' as http;
 import './appconfig.dart';
 
 class PlanDetail extends StatefulWidget {
+  final int id;
+
+  PlanDetail({this.id});
+
   @override
   PlanDetailState createState() {
-    return PlanDetailState();
+    return PlanDetailState(id: id);
   }
 }
 
 class PlanDetailState extends State<PlanDetail> {
   Future<PlanExtended> plan;
   PlanExtended _plan;
+  final int id;
+
+  PlanDetailState({this.id});
 
   @override
   void initState() {
@@ -25,15 +32,11 @@ class PlanDetailState extends State<PlanDetail> {
   }
 
   Future<PlanExtended> fetchPlans() async {
-    // print(appData.phone);
-
-    var id = '2';
-
-    final response = await http.get('http://10.8.1.138:3000/mock/plan/$id');
+    final response = await http.get('http://10.8.1.138:3000/api/plans/$id');
 
     if (response.statusCode == 200) {
       setState(() {});
-      _plan = PlanExtended.fromJson(jsonDecode(response.body)['data']);
+      _plan = PlanExtended.fromJson(jsonDecode(response.body)['data']['result']);
 
       return _plan;
     } else {
@@ -61,16 +64,22 @@ class PlanDetailState extends State<PlanDetail> {
           future: plan,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              int lastIndex = snapshot.data.answers.length;
+              List<Answer> userAnsers = snapshot.data.answers.where((Answer answer) {
+                print(answer.phone);
+                return answer.phone == appData.phone;
+              }).toList();
+
+              int lastIndex = userAnsers.length;
+              print(lastIndex);
               return ListView.builder(
                 itemBuilder: (context, index) {
                   if (index == lastIndex) {
-                    return NewPlanWidget();
+                    return NewPlanWidget(plan_id: _plan.id);
                   } else {
-                    return _buildRow(snapshot.data.answers[index]);
+                    return _buildRow(userAnsers[index]);
                   }
                 },
-                itemCount: snapshot.data.answers.length + 1,
+                itemCount: userAnsers.length + 1,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
               );

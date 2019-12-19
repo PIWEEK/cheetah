@@ -2,33 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-class newPlan {
-  final int plan_id;
-  final DateTime date;
-  final TimeOfDay time;
-  final bool answer;
-
-  newPlan({this.plan_id, this.date, this.time, this.answer});
-
-  factory newPlan.fromJson(Map<String, dynamic> json) {
-    var time = json['time'].split(':');
-
-    return newPlan(
-        plan_id: json['plan_id'],
-        date: DateTime.parse(json['date']),
-        time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
-        answer: json['answer']
-    );
-  }
-}
+import './appconfig.dart';
 
 class NewPlanWidget extends StatefulWidget {
-  NewPlanWidget();
+  final int plan_id;
+
+  NewPlanWidget({this.plan_id});
 
   @override
   NewPlanState createState() {
-    return NewPlanState();
+    print('sdfsdf');
+    print(plan_id);
+    return NewPlanState(plan_id: plan_id);
   }
 }
 
@@ -38,8 +23,12 @@ class _EventData {
 }
 
 class NewPlanState extends State<NewPlanWidget> {
+  final int plan_id;
+
   _EventData _data = new _EventData();
   bool currentAnswer;
+
+  NewPlanState({this.plan_id});
 
   @override
   void initState() {
@@ -67,7 +56,21 @@ class NewPlanState extends State<NewPlanWidget> {
   }
 
   _save() {
+    String map = jsonEncode({
+      'date': '${_data.date.year}-${_data.date.month}-${_data.date.day}',
+      'time': '${_data.time.hour}:${_data.time.minute}',
+      'owner_phone': appData.phone,
+      'parent_id': plan_id
+    });
 
+    print(map);
+
+    http.post('http://10.8.1.138:3000/api/plans', body: map, headers: {'Content-Type': 'application/json'}).then((http.Response response) {
+      final int statusCode = response.statusCode;
+      if (statusCode < 200 || statusCode > 400 || json == null) {
+        throw new Exception("Error saving data");
+      }
+    });
   }
 
   @override
@@ -169,9 +172,7 @@ class NewPlanState extends State<NewPlanWidget> {
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                FlatButton(
-                                    color: Colors.deepOrange,
-                                    textColor: Colors.white,
+                                RaisedButton(
                                     onPressed: () {
                                       _save();
                                     },

@@ -82,11 +82,12 @@ class _MyHomePageState extends State<MyHomePage> {
             if (snapshot.hasData) {
               return _buildChats(snapshot.data);
             } else if (snapshot.hasError) {
-              return Text("${snapshot.error}");
+              return Text("error");
             }
-
-            return CircularProgressIndicator();
-          },
+            return Center(
+              child: CircularProgressIndicator()
+            );
+          }
       ),
       floatingActionButton: new FloatingActionButton(
         backgroundColor: Colors.deepOrange,
@@ -100,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
-          final index = i ~/ 2;
+          final index = i;
 
           if (index < plans.length) {
             return _buildRow(plans[index]);
@@ -109,28 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRow(Plan plan) {
-    return Card(
-        child: Padding(
-            padding: EdgeInsets.all(5.0),
-            child: ListTile(
-              title: Text(
-                  plan.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16.0,
-                  )
-              ),
-              subtitle: Text(
-                  plan.description,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16.0,
-                    height: 2,
-                  )
-              ),
-              onTap: _detail,
-            )
+    return ListTile(
+      title: Text(
+          plan.name,
+          style: const TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 16.0,
+          )
+      ),
+      subtitle: Text(
+        plan.description,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 16.0,
+          height: 2,
         )
+      ),
+      onTap: () {
+        _detail(plan.id);
+      },
     );
   }
 
@@ -144,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<List<Plan>> fetchPlans() async {
-    final response = await http.get('http://10.8.1.138:3000/api/plans/${appData.phone}');
+    final response = await http.get('http://10.8.1.138:3000/api/user-plans/${appData.phone}');
 
     if (response.statusCode == 200) {
       List<dynamic> plans = jsonDecode(response.body)['data']['result'];
@@ -192,11 +190,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _detail() {
+  void _detail(int planId) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return PlanDetail();
+          return PlanDetail(id: planId);
         },
       ),
     );

@@ -7,18 +7,21 @@ class Answer {
   final int plan_id;
   final DateTime date;
   final TimeOfDay time;
+  final String phone;
   final bool answer;
 
-  Answer({this.plan_id, this.date, this.time, this.answer});
+  Answer({this.plan_id, this.date, this.time, this.answer, this.phone});
 
   factory Answer.fromJson(Map<String, dynamic> json) {
+    print(json);
     var time = json['time'].split(':');
 
     return Answer(
         plan_id: json['plan_id'],
         date: DateTime.parse(json['date']),
         time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
-        answer: json['answer']
+        answer: json['answer'],
+        phone: json['person_phone'],
     );
   }
 }
@@ -35,16 +38,21 @@ class PlanExtended {
   PlanExtended({this.id, this.name, this.description, this.date, this.time, this.answers, this.author});
 
   factory PlanExtended.fromJson(Map<String, dynamic> json) {
+    print(json);
     var time = json['time'].split(':');
     List<dynamic> answers = json['answers'];
 
     answers = answers.map((anwer) => Answer.fromJson(anwer)).toList();
 
+    print('dates');
+    print(int.parse(time[0]));
+    print(int.parse(time[1]));
+
     return PlanExtended(
-        id: json['id'],
+        id: int.parse(json['id']),
         name: json['name'],
         description: json['description'],
-        author: json['author'],
+        author: json['owner_name'],
         date: DateTime.parse(json['date']),
         time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
         answers: answers

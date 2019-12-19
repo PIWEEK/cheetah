@@ -244,22 +244,39 @@ router.post('/api/plans', koaBody(), async (ctx) => {
   try {
     const body = ctx.request.body;
     // insert plan
-    const plan_text = 'INSERT INTO plan(name, description, date, time, min_people, owner_phone) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
-    const plan_values = [body.name, body.description, body.date, body.time, body.min_people, body.owner_phone];
+    let plan_text;
+    let plan_values;
+    let people;
+
+    // set parentId for plans with parent
+    if (body.parent_id) {
+      plan_text = 'INSERT INTO plan(date, time, owner_phone, parentId) VALUES($1, $2, $3, $4) RETURNING id';
+      plan_values = [body.date, body.time, body.owner_phone, body.parent_id];
+      const personPhones: any = await pool.query('SELECT person_phone, required_person FROM plan_person WHERE plan_id = $1', [body.parent_id]);
+
+      people = personPhones.rows
+      .map((person: any) => {
+        return {
+          phone: person.person_phone,
+          required: person.required_person
+        };
+      })
+      .filter((person: any) => {
+        return person.phone !== body.owner_phone;
+      });
+    } else {
+      plan_text = 'INSERT INTO plan(name, description, date, time, min_people, owner_phone) VALUES($1, $2, $3, $4, $5, $6) RETURNING id';
+      plan_values = [body.name, body.description, body.date, body.time, body.min_people, body.owner_phone];
+      people = body.people;          
+    }
+
     const createdPlan = await pool.query(plan_text, plan_values);
     const planId = createdPlan.rows[0].id;
 
-    // set parentId for plans with parent
-    if (body.parentId) {
-      await pool.query('UPDATE plan SET parentId = $1 WHERE id = $2', [body.parentId, planId]);
-    }
-
-    // set owner answer
     await pool.query('INSERT INTO plan_person(plan_id, person_phone, answer) VALUES($1, $2, $3)', [planId, body.owner_phone, true]);
 
     //person
-    body.people.forEach( async (person: {phone: string, required: boolean}) => {
-
+    people.forEach( async (person: {phone: string, required: boolean}) => {
       // insert every person to person table if phone is not registered
       if (!await isPhoneInPersonTable(person.phone)) {
         const text = 'INSERT INTO person(phone) VALUES($1)';
@@ -305,12 +322,13 @@ router.get('/api/plans', async (ctx) => {
   }
 });
 
-router.get('/api/:user', async (ctx) => {
+router.get('/api/user-plans/:user', async (ctx) => {
   try {
     const result = await pool.query(`
-    SELECT * FROM plan_person
-    LEFT JOIN plan ON plan.id = plan_person.plan_id
-    WHERE person_phone = $1
+    SELECT plan_person.*, parent_plan.name FROM plan_person
+    INNER JOIN plan plan_person_plan ON plan_person_plan.id = plan_person.plan_id
+    INNER JOIN plan parent_plan ON parent_plan.id = plan_person_plan.parentid
+    WHERE person_phone = $1 AND plan_person_plan.parentid IS NOT NULL
     `, [ctx.params.user]);
     ctx.body = {
       data: {
@@ -350,33 +368,41 @@ router.get('/api/plans/user/:phone', koaBody(), async (ctx) => {
 
 router.get('/api/plans/:id', koaBody(), async (ctx) => {
   try {
-    let parentPlan: any = await pool.query('SELECT * FROM plan WHERE id = $1', [ctx.params.id]);
+    let parentPlan: any = await pool.query(`
+    SELECT plan.*, person.name as owner_name FROM plan
+    inner join person
+    ON plan.owner_phone = person.phone 
+    WHERE id = $1`, [ctx.params.id]);
     const alternativePlans: any = await pool.query('SELECT * FROM plan WHERE parentId = $1', [ctx.params.id]);
 
-    /* select t1.name, t2.image_id, t3.path
-    from table1 t1 inner join table2 t2 on t1.person_id = t2.person_id
-    inner join table3 t3 on t2.image_id=t3.image_id */
-
-    const answersPlan = await pool.query('SELECT answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time FROM plan plan inner join plan_person answer on plan.id = answer.plan_id WHERE id = $1', [ctx.params.id]);
+    const answersPlan = await pool.query(`SELECT 
+    answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time
+    FROM plan plan 
+    inner join plan_person answer
+      on plan.id = answer.plan_id
+    WHERE id = $1
+    `, [ctx.params.id]);
 
     parentPlan = parentPlan.rows[0];
     parentPlan.answers = answersPlan.rows;
 
-    await alternativePlans.rows.forEach( async (alternativePlan: {id: number}, index: number) => {
-      const answersAlternativePlan = await pool.query('SELECT answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time FROM plan plan inner join plan_person answer on plan.id = answer.plan_id WHERE id = $1', [alternativePlan.id]);
+/*     await alternativePlans.rows.forEach(async (alternativePlan: any) => {
+      const answersAlternativePlan = await pool.query(`
+        SELECT answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time 
+        FROM plan plan inner join plan_person answer on plan.id = answer.plan_id WHERE id = $1
+      `, [alternativePlan.id]);
 
-      alternativePlans.rows[index].answers = answersAlternativePlan.rows;
+      alternativePlan.answers = answersAlternativePlan.rows;
       console.log('answersAlternativePlan.rows', answersAlternativePlan.rows);
-
     });
 
     console.log('alternativePlans', alternativePlans.rows);
-
-    ctx.status = 201;
+ */
+    ctx.status = 200;
     ctx.body = {
       status: 'success',
       data: {
-        result: [parentPlan, ...alternativePlans.rows]
+        result: parentPlan
       }
     }
   } catch(error) {

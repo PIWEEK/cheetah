@@ -5,12 +5,12 @@ CREATE TABLE IF NOT EXISTS person (
 
 CREATE TABLE IF NOT EXISTS plan (
   id BIGSERIAL PRIMARY KEY NOT NULL,
-  name VARCHAR(45) NOT NULL,  
-  description VARCHAR(450),  
+  name VARCHAR(45) NULL,  
+  description VARCHAR(450) NULL,  
   date Date NOT NULL DEFAULT NOW(),  
   time TIME,
-  min_people INTEGER,
-  owner_phone VARCHAR(14),
+  min_people INTEGER NULL,
+  owner_phone VARCHAR(14) NULL,
   parentId INTEGER DEFAULT NULL,
   is_active BOOLEAN DEFAULT true,
   FOREIGN KEY (owner_phone) REFERENCES person(phone)
