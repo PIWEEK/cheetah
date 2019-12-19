@@ -1,21 +1,11 @@
 import 'dart:convert';
 
 import 'package:cheetah/answer.dart';
+import 'package:cheetah/newPlan.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-/*
-
-      name: 'plan 1',
-      descripcion: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus dignissim mattis purus, et aliquet enim vestibulum in. Praesent quis dui interdum, feugiat nisi posuere, porttitor risus. Phasellus sit amet enim egestas, dapibus nulla eu, finibus ipsum. In sit amet augue neque. Maecenas tincidunt a arcu eu dapibus. Quisque gravida tortor at rutrum finibus. Nullam ac molestie ante. Ut ac congue erat. Sed nisi purus, gravida a nisl et, euismod vestibulum metus. Pellentesque commodo porta viverra. Maecenas venenatis congue lacus, in viverra lorem tincidunt eget.',
-      date: new Date().toUTCString(),
-      time: '12:00',
-
-           plan_id: 4,
-          anwer: null,
-          date: '2019-12-18 23:00:00.000Z',
-          time: '22:45'
- */
+import './appconfig.dart';
 
 class PlanExtended {
   final int id;
@@ -59,6 +49,8 @@ class PlanDetailState extends State<PlanDetail> {
   }
 
   Future<PlanExtended> fetchPlans() async {
+    // print(appData.phone);
+
     var id = '2';
 
     final response = await http.get('http://10.8.1.138:3000/mock/plan/$id');
@@ -89,9 +81,17 @@ class PlanDetailState extends State<PlanDetail> {
           future: plan,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              int lastIndex = snapshot.data.answers.length;
+
               return ListView.builder(
-                itemBuilder: (context, index) => _buildRow(snapshot.data.answers[index]),
-                itemCount: snapshot.data.answers.length,
+                itemBuilder: (context, index) {
+                  if (index == lastIndex) {
+                    return NewPlanWidget();
+                  } else {
+                    return _buildRow(snapshot.data.answers[index]);
+                  }
+                },
+                itemCount: snapshot.data.answers.length + 1,
                 scrollDirection: Axis.vertical,
                 shrinkWrap: true,
               );

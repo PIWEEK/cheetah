@@ -136,7 +136,7 @@ class AnswerState extends State<AnswerWidget> {
              )
            ],
          ),
-         Column(
+         /*Column(
              crossAxisAlignment: CrossAxisAlignment.start,
              children: <Widget>[
                Text('¿Cuando te gustaria quedar?'),
@@ -170,18 +170,8 @@ class AnswerState extends State<AnswerWidget> {
                      ]
                  ),
                ),
-               Padding(
-                 padding: const EdgeInsets.only(top: 0),
-                 child: FlatButton(
-                     color: Colors.deepOrange,
-                     textColor: Colors.white,
-                     onPressed: () {
-                     },
-                     child: Text('Invitados: 0',)
-                 ),
-               ),
              ]
-         ),
+         ),*/
        ]
      )
     );
