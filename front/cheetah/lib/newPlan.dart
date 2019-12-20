@@ -104,7 +104,7 @@ class NewPlanState extends State<NewPlanWidget> {
                     CircleAvatar(
                       backgroundColor: Colors.white,
                       radius: 35.5,
-                      backgroundImage: AssetImage('assets/images/ic_launcher.png'),
+                      backgroundImage: AssetImage('assets/images/ic_launcher_answer.png'),
                     ),
                     SizedBox(width: 10.0),
                     Column(
