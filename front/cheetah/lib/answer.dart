@@ -92,6 +92,9 @@ class AnswerState extends State<AnswerWidget> {
     map["id"] = answer.plan_id;
     map["value"] = value;
 
+    Scaffold.of(context)
+        .showSnackBar(SnackBar(content: Text('Envíando respuesta')));
+
     http.post('http://10.8.1.138:3000/mock/answer', body: json.encode(map)).then((http.Response response) {
       final int statusCode = response.statusCode;
       if (statusCode < 200 || statusCode > 400 || json == null) {
@@ -108,7 +111,7 @@ class AnswerState extends State<AnswerWidget> {
         softWrap: true,
         text: TextSpan(
           text: '¿Qué tal quedar el ',
-          style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
+          style: TextStyle(color: Colors.blueGrey, fontSize: 16.0, fontWeight: FontWeight.w700),
           children: <TextSpan>[
             TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' a las '),
@@ -123,7 +126,7 @@ class AnswerState extends State<AnswerWidget> {
       softWrap: true,
       text: TextSpan(
         text: '',
-        style: TextStyle(color: Colors.blueGrey, fontSize: 15.0, fontWeight: FontWeight.w600),
+        style: TextStyle(color: Colors.blueGrey, fontSize: 16.0, fontWeight: FontWeight.w700),
         children: <TextSpan>[
           TextSpan(text: plan.author, style: TextStyle(fontWeight: FontWeight.bold)),
           TextSpan(text: ' ha propuesto un plan con la siguiente descripción:'),
@@ -173,7 +176,7 @@ class AnswerState extends State<AnswerWidget> {
                children: <Widget>[
                  Text(
                    'Cheetah',
-                   style: TextStyle(color: Colors.black, fontSize: 15.0, fontWeight: FontWeight.bold),
+                   style: TextStyle(color: Colors.black, fontSize: 18.0, fontWeight: FontWeight.bold),
                  ),
                  SizedBox(height: 5.0),
                  Container(
@@ -187,21 +190,24 @@ class AnswerState extends State<AnswerWidget> {
          SizedBox(height: 5.0),
           Row(
            children: <Widget>[
-             FlatButton(
-               color: currentAnswer != null && currentAnswer ? Colors.deepOrangeAccent : Colors.grey,
-               textColor: Colors.white,
-               padding: EdgeInsets.all(3.0),
-               splashColor: Colors.deepOrange,
-               onPressed: () {
-                 answerPlan(true);
-               },
-               child: Text(
-                 "Sí",
-                 style: TextStyle(fontSize: 14.0),
-               )
+             Expanded(
+               child: FlatButton(
+                 color: currentAnswer != null && currentAnswer ? Colors.deepOrangeAccent : Colors.grey,
+                 textColor: Colors.white,
+                 padding: EdgeInsets.all(3.0),
+                 splashColor: Colors.deepOrange,
+                 onPressed: () {
+                   answerPlan(true);
+                 },
+                 child: Text(
+                   "Sí",
+                   style: TextStyle(fontSize: 14.0),
+                 )
+               ),
              ),
              SizedBox(width: 10.0),
-             FlatButton(
+            Expanded(
+              child: FlatButton(
                  color: currentAnswer != null && !currentAnswer ? Colors.deepOrangeAccent : Colors.grey,
                  textColor: Colors.white,
                  padding: EdgeInsets.all(3.0),
@@ -214,6 +220,7 @@ class AnswerState extends State<AnswerWidget> {
                    style: TextStyle(fontSize: 14.0),
                  )
              )
+            )
            ],
          ),
        ]

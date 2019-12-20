@@ -112,7 +112,7 @@ class NewPlanState extends State<NewPlanWidget> {
                         Text(
                           'Cheetah',
                           style: TextStyle(color: Colors.black,
-                              fontSize: 15.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 5.0),
@@ -126,8 +126,8 @@ class NewPlanState extends State<NewPlanWidget> {
                             text: TextSpan(
                                 text: '¿Quieres hacer una contrapropuesta?',
                                 style: TextStyle(color: Colors.blueGrey,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w600)
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.w700)
                             ),
                           ),
                         )
@@ -136,22 +136,25 @@ class NewPlanState extends State<NewPlanWidget> {
                   ],
                 ),
                 if (currentAnswer == null)
+                  SizedBox(height: 10.0),
                   Row(
                     children: <Widget>[
-                      FlatButton(
-                          color: Colors.deepOrangeAccent,
-                          textColor: Colors.white,
-                          padding: EdgeInsets.fromLTRB(10.0, 3.0, 10.0, 3.0),
-                          splashColor: Colors.deepOrange,
-                          onPressed: () {
-                            setState(() {
-                              currentAnswer = true;
-                            });
-                          },
-                          child: Text(
-                            "Añadir contrapropuesta",
-                            style: TextStyle(fontSize: 14.0),
-                          )
+                      Expanded(
+                        child: FlatButton(
+                            color: Colors.deepOrangeAccent,
+                            textColor: Colors.white,
+                            padding: EdgeInsets.fromLTRB(10.0, 3.0, 10.0, 3.0),
+                            splashColor: Colors.deepOrange,
+                            onPressed: () {
+                              setState(() {
+                                currentAnswer = true;
+                              });
+                            },
+                            child: Text(
+                              "Añadir contrapropuesta",
+                              style: TextStyle(fontSize: 14.0),
+                            )
+                        ),
                       )
                     ],
                   ),
