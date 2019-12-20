@@ -88,7 +88,9 @@ class PlanDetailState extends State<PlanDetail> {
               return Text("${snapshot.error}");
             }
 
-            return CircularProgressIndicator();
+            return Center(
+                child: CircularProgressIndicator()
+            );
           },
         )
       ),
