@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cheetah/appconfig.dart';
+import 'package:cheetah/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -104,8 +105,8 @@ class AnswerState extends State<AnswerWidget> {
   }
 
   Widget _question() {
-    print('00000');
-    print(answer.answer);
+    String _time = formatTimeOfDay(answer.time);
+
     if (plan.id != answer.plan_id || appData.phone == plan.authorPhone) {
       return RichText(
         softWrap: true,
@@ -115,7 +116,7 @@ class AnswerState extends State<AnswerWidget> {
           children: <TextSpan>[
             TextSpan(text: '${answer.date.day}/${answer.date.month}/${answer.date.year}', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: ' a las '),
-            TextSpan(text: '${answer.time.hour}:${answer.time.minute}', style: TextStyle(fontWeight: FontWeight.bold)),
+            TextSpan(text: '${_time}', style: TextStyle(fontWeight: FontWeight.bold)),
             TextSpan(text: '?'),
           ],
         ),

@@ -252,7 +252,7 @@ class CreateFormState extends State<CreateForm > {
                             String map = jsonEncode({
                               'name': _data.name,
                               'description': _data.description,
-                              'date': '${_data.date.year}-${_data.date.month}-${_data.date.day + 1}',
+                              'date': '${_data.date.year}-${_data.date.month}-${_data.date.day}',
                               'time': '${_data.time.hour}:${_data.time.minute}',
                               'min_people': _data.min_attendees,
                               'people': _data.phones.map((phone) {
