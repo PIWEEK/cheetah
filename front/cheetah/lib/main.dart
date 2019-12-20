@@ -110,25 +110,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildRow(Plan plan) {
-    return ListTile(
-      title: Text(
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(5.0),
+          child: ListTile(
+          title: Text(
           plan.name,
           style: const TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 16.0,
           )
-      ),
-      subtitle: Text(
-        plan.description,
-        overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
-          fontSize: 16.0,
-          height: 2,
+          ),
+          subtitle: Text(
+              plan.description,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 16.0,
+                height: 2,
+              )
+          ),
+          onTap: () {
+            _detail(plan.id);
+          },
         )
-      ),
-      onTap: () {
-        _detail(plan.id);
-      },
+      )
     );
   }
 

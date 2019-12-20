@@ -74,7 +74,7 @@ class MyPlansState extends State<MyPlans> {
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemBuilder: (context, i) {
-          final index = i ~/ 2;
+          final index = i;
 
           if (index < plans.length) {
             return _buildRow(plans[index]);
