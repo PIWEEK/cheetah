@@ -145,8 +145,9 @@ class CreateFormState extends State<CreateForm > {
                  children: <Widget>[
                    Expanded(
                      child: FlatButton(
-                         color: Colors.deepOrangeAccent,
-                         textColor: Colors.white,
+                         shape: RoundedRectangleBorder(side: BorderSide(color: Colors.deepOrange), borderRadius: new BorderRadius.circular(3.0)),
+                         color: Colors.white,
+                         textColor: Colors.deepOrange,
                          onPressed: () {
                            _selectDate(context);
                          },
@@ -175,8 +176,9 @@ class CreateFormState extends State<CreateForm > {
                     children: <Widget>[
                       Expanded(
                         child: FlatButton(
-                            color: Colors.deepOrangeAccent,
-                            textColor: Colors.white,
+                            shape: RoundedRectangleBorder(side: BorderSide(color: Colors.deepOrange), borderRadius: new BorderRadius.circular(3.0)),
+                            color: Colors.white,
+                            textColor: Colors.deepOrange,
                             onPressed: () {
                               _selectTime(context);
                             },
@@ -204,8 +206,9 @@ class CreateFormState extends State<CreateForm > {
                   children: <Widget>[
                     Expanded(
                       child: FlatButton(
-                          color: Colors.deepOrangeAccent,
-                          textColor: Colors.white,
+                          shape: RoundedRectangleBorder(side: BorderSide(color: Colors.deepOrange), borderRadius: new BorderRadius.circular(3.0)),
+                          color: Colors.white,
+                          textColor: Colors.deepOrange,
                           onPressed: () {
                             getContacts();
                           },
