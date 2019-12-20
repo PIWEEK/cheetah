@@ -142,7 +142,7 @@ class NewPlanState extends State<NewPlanWidget> {
                     children: <Widget>[
                       Expanded(
                         child: FlatButton(
-                            color: Colors.deepOrangeAccent,
+                            color: Colors.deepOrange,
                             textColor: Colors.white,
                             padding: EdgeInsets.fromLTRB(10.0, 3.0, 10.0, 3.0),
                             splashColor: Colors.deepOrange,
@@ -164,26 +164,37 @@ class NewPlanState extends State<NewPlanWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(height: 20.0),
-                        Text('¿Cuando te gustaria quedar?'),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: Text('¿Cuando te gustaria quedar?'),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                FlatButton(
-                                    color: Colors.deepOrange,
-                                    textColor: Colors.white,
-                                    onPressed: () {
-                                      _selectDate(context);
-                                    },
-                                    child: Text('Seleccionar fecha',)
+                                Expanded(
+                                  child: FlatButton(
+                                      shape: RoundedRectangleBorder(side: BorderSide(color: Colors.deepOrange), borderRadius: new BorderRadius.circular(3.0)),
+                                      color: Colors.white,
+                                      textColor: Colors.deepOrange,
+                                      onPressed: () {
+                                        _selectDate(context);
+                                      },
+                                      child: Text('Seleccionar fecha',)
+                                  ),
                                 ),
-                                Text(
-                                  " ${_date}",
-                                  style: TextStyle(
-                                      color: Colors.deepOrange,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      " ${_date}",
+                                      style: TextStyle(
+                                          color: Colors.deepOrange,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0),
+                                    ),
+                                  ),
                                 ),
                               ]
                           ),
@@ -193,20 +204,28 @@ class NewPlanState extends State<NewPlanWidget> {
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                FlatButton(
-                                    color: Colors.deepOrange,
-                                    textColor: Colors.white,
-                                    onPressed: () {
-                                      _selectTime(context);
-                                    },
-                                    child: Text('Seleccionar hora',)
+                                Expanded(
+                                  child: FlatButton(
+                                      shape: RoundedRectangleBorder(side: BorderSide(color: Colors.deepOrange), borderRadius: new BorderRadius.circular(3.0)),
+                                      color: Colors.white,
+                                      textColor: Colors.deepOrange,
+                                      onPressed: () {
+                                        _selectTime(context);
+                                      },
+                                      child: Text('Seleccionar hora',)
+                                  ),
                                 ),
-                                Text(
-                                  " ${_time}",
-                                  style: TextStyle(
-                                      color: Colors.deepOrange,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18.0),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Text(
+                                      " ${_time}",
+                                      style: TextStyle(
+                                          color: Colors.deepOrange,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18.0),
+                                    ),
+                                  ),
                                 ),
                               ]
                           ),
@@ -218,11 +237,15 @@ class NewPlanState extends State<NewPlanWidget> {
                                 mainAxisAlignment: MainAxisAlignment
                                     .spaceBetween,
                                 children: <Widget>[
-                                  RaisedButton(
-                                      onPressed: () {
-                                        _save();
-                                      },
-                                      child: Text('Guardar',)
+                                  Expanded(
+                                    child: RaisedButton(
+                                        color: Colors.deepOrange,
+                                        textColor: Colors.white,
+                                        onPressed: () {
+                                          _save();
+                                        },
+                                        child: Text('Guardar',)
+                                    ),
                                   ),
                                 ]
                             ),
