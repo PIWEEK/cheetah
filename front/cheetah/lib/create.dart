@@ -209,7 +209,13 @@ class CreateFormState extends State<CreateForm > {
                         };
                       }));
 
-                      _data.phones = ['600000002', '600000003'];
+                      if (appData.phone == "600000001") {
+                        _data.phones = ['600000002', '600000003'];
+                      } else if (appData.phone == "600000002") {
+                        _data.phones = ['600000001', '600000003'];
+                      } else {
+                        _data.phones = ['600000001', '600000002'];
+                      }
 
                       String map = jsonEncode({
                         'name': _data.name,
