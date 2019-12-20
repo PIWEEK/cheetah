@@ -209,17 +209,18 @@ class CreateFormState extends State<CreateForm > {
                         };
                       }));
 
+                      _data.phones = ['600000002', '600000003'];
+
                       String map = jsonEncode({
                         'name': _data.name,
                         'description': _data.description,
-                        'date': '${_data.date.year}-${_data.date.month}-${_data.date.day}',
+                        'date': '${_data.date.year}-${_data.date.month}-${_data.date.day + 1}',
                         'time': '${_data.time.hour}:${_data.time.minute}',
                         'min_people': _data.min_attendees,
                         'people': _data.phones.map((phone) {
                           return {
                             'required': false,
-                            // 'phone': phone
-                            'phone': '600000002'
+                            'phone': phone
                           };
                         }).toList(),
                         'owner_phone': appData.phone

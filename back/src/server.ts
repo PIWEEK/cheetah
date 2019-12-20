@@ -337,9 +337,21 @@ router.get('/api/user-plans/:user', async (ctx) => {
     WHERE person_phone = $1 AND plan_person_plan.parentid IS NOT NULL AND answer IS NULL
     `, [ctx.params.user]);
 
+    const final: any = [];
+
+    [...resultWithoutParent.rows, ...result.rows].forEach((it) => {
+      const finded = final.find((it2: any) => {
+        return it2.id === it.id;
+      });
+
+      if (!finded) {
+        final.push(it);
+      }
+    });
+
     ctx.body = {
       data: {
-        result: [...resultWithoutParent.rows, ...result.rows]
+        result: final
       }
     }
   } catch(error) {
@@ -373,25 +385,30 @@ router.get('/api/plans/user/:phone', koaBody(), async (ctx) => {
   }
 });
 
-router.get('/api/plans/:id', koaBody(), async (ctx) => {
+router.get('/api/plans/:id/:user', koaBody(), async (ctx) => {
   try {
-    let parentPlan: any = await pool.query(`
+    let plan: any = await pool.query(`
     SELECT plan.*, person.name as owner_name FROM plan
     inner join person
     ON plan.owner_phone = person.phone 
     WHERE id = $1`, [ctx.params.id]);
+
+    const parentPlan = plan.rows[0];
+
     const alternativePlans: any = await pool.query('SELECT * FROM plan WHERE parentId = $1', [ctx.params.id]);
+    const ids = [...alternativePlans.rows.map((it: any) => it.id), ctx.params.id];
 
     const answersPlan = await pool.query(`SELECT 
-    answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time
+    answer.plan_id, answer.person_phone, answer.answer, plan.date, plan.time, plan.owner_phone
     FROM plan plan 
     inner join plan_person answer
       on plan.id = answer.plan_id
-    WHERE id = $1
-    `, [ctx.params.id]);
+    WHERE id IN (${ids.join(', ')}) AND answer.person_phone = $1
+    `, [ctx.params.user]);
 
-    parentPlan = parentPlan.rows[0];
-    parentPlan.answers = answersPlan.rows;
+    parentPlan.answers = answersPlan.rows.filter((it) => {
+      return !(it.plan_id === Number(ctx.params.id) && parentPlan.owner_phone === ctx.params.user) && !(it.owner_phone ===  ctx.params.user);
+    });
 
 /*     await alternativePlans.rows.forEach(async (alternativePlan: any) => {
       const answersAlternativePlan = await pool.query(`

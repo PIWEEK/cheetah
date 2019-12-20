@@ -32,7 +32,7 @@ class PlanDetailState extends State<PlanDetail> {
   }
 
   Future<PlanExtended> fetchPlans() async {
-    final response = await http.get('http://10.8.1.138:3000/api/plans/$id');
+    final response = await http.get('http://10.8.1.138:3000/api/plans/$id/${appData.phone}');
 
     if (response.statusCode == 200) {
       setState(() {});
@@ -67,6 +67,8 @@ class PlanDetailState extends State<PlanDetail> {
               List<Answer> userAnsers = snapshot.data.answers.where((Answer answer) {
                 return answer.phone == appData.phone;
               }).toList();
+
+              print(userAnsers[0].phone);
 
               int lastIndex = userAnsers.length;
               print(lastIndex);

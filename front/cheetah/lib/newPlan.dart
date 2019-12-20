@@ -56,7 +56,7 @@ class NewPlanState extends State<NewPlanWidget> {
 
   _save() {
     String map = jsonEncode({
-      'date': '${_data.date.year}-${_data.date.month}-${_data.date.day}',
+      'date': '${_data.date.year}-${_data.date.month}-${_data.date.day + 1}',
       'time': '${_data.time.hour}:${_data.time.minute}',
       'owner_phone': appData.phone,
       'parent_id': plan_id

@@ -15,13 +15,15 @@ class Plan {
   final int id;
   final String name;
   final String description;
+  final int parentId;
 
-  Plan({this.id, this.name, this.description});
+  Plan({this.id, this.name, this.description, this.parentId});
 
   factory Plan.fromJson(Map<String, dynamic> json) {
     return Plan(
       id: int.parse(json['id']),
       name: json['name'],
+      parentId: json['plan_id'],
       description: json['description'],
     );
   }

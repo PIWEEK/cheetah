@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cheetah/appconfig.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,6 +16,9 @@ class Answer {
   factory Answer.fromJson(Map<String, dynamic> json) {
     print(json);
     var time = json['time'].split(':');
+
+    print('creando');
+    print(json['answer']);
 
     return Answer(
         plan_id: json['plan_id'],
@@ -33,9 +37,10 @@ class PlanExtended {
   final String author;
   final DateTime date;
   final TimeOfDay time;
+  final String authorPhone;
   final List<Answer> answers;
 
-  PlanExtended({this.id, this.name, this.description, this.date, this.time, this.answers, this.author});
+  PlanExtended({this.id, this.name, this.description, this.date, this.time, this.answers, this.author, this.authorPhone});
 
   factory PlanExtended.fromJson(Map<String, dynamic> json) {
     print(json);
@@ -49,6 +54,7 @@ class PlanExtended {
         name: json['name'],
         description: json['description'],
         author: json['owner_name'],
+        authorPhone: json['owner_phone'],
         date: DateTime.parse(json['date']),
         time: TimeOfDay(hour: int.parse(time[0]), minute: int.parse(time[1])),
         answers: answers
@@ -95,7 +101,9 @@ class AnswerState extends State<AnswerWidget> {
   }
 
   Widget _question() {
-    if (plan.id != answer.plan_id) {
+    print('00000');
+    print(answer.answer);
+    if (plan.id != answer.plan_id || appData.phone == plan.authorPhone) {
       return RichText(
         softWrap: true,
         text: TextSpan(
