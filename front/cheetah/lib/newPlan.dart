@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cheetah/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import './appconfig.dart';
@@ -81,6 +82,18 @@ class NewPlanState extends State<NewPlanWidget> {
 
   @override
   Widget build(BuildContext context) {
+    String _date = '';
+
+    if (_data.date != null) {
+      _date = '${_data.date.year} - ${_data.date.month} - ${_data.date.day}';
+    }
+
+    String _time = '';
+
+    if (_data.time != null) {
+      _time = formatTimeOfDay(_data.time);
+    }
+
     if (showAddNewPlan) {
       return Container(
           padding: EdgeInsets.all(10.0),
@@ -161,6 +174,13 @@ class NewPlanState extends State<NewPlanWidget> {
                                     },
                                     child: Text('Seleccionar fecha',)
                                 ),
+                                Text(
+                                  " ${_date}",
+                                  style: TextStyle(
+                                      color: Colors.deepOrange,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0),
+                                ),
                               ]
                           ),
                         ),
@@ -176,6 +196,13 @@ class NewPlanState extends State<NewPlanWidget> {
                                       _selectTime(context);
                                     },
                                     child: Text('Seleccionar hora',)
+                                ),
+                                Text(
+                                  " ${_time}",
+                                  style: TextStyle(
+                                      color: Colors.deepOrange,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0),
                                 ),
                               ]
                           ),

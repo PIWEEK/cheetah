@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cheetah/contacts.dart';
+import 'package:cheetah/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -81,7 +82,7 @@ class CreateFormState extends State<CreateForm > {
     }
 
     if (_data.time != null) {
-      _time = '${_data.time.hour} : ${_data.time.minute}';
+      _time = formatTimeOfDay(_data.time);
     }
 
     return Form(
