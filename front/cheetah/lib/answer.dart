@@ -168,7 +168,7 @@ class AnswerState extends State<AnswerWidget> {
            children: <Widget>[
              CircleAvatar(
                radius: 35.5,
-               backgroundImage: AssetImage('assets/images/avatar.png'),
+               backgroundImage: AssetImage('assets/images/ic_launcher.png'),
              ),
              SizedBox(width: 10.0),
              Column(
