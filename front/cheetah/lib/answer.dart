@@ -164,6 +164,7 @@ class AnswerState extends State<AnswerWidget> {
      padding: EdgeInsets.all(10.0),
      child: Column(
        children: [
+         SizedBox(height: 20.0),
          Row(
            children: <Widget>[
              CircleAvatar(

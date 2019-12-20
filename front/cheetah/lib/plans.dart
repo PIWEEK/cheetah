@@ -37,7 +37,7 @@ class MyPlansState extends State<MyPlans> {
   }
 
   Future<List<Plan>> fetchPlans() async {
-    final response = await http.get('http://10.8.1.166:3000/api/plans/user/${appData.phone}');
+    final response = await http.get('http://10.8.1.138:3000/api/plans/user/${appData.phone}');
     print(response.body);
     if (response.statusCode == 200) {
       List<dynamic> plans = jsonDecode(response.body)['data']['result'];

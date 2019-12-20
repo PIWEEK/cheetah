@@ -368,7 +368,8 @@ router.get('/api/user-plans/:user', async (ctx) => {
 // my plans
 router.get('/api/plans/user/:phone', koaBody(), async (ctx) => {
   try {
-    const result = await pool.query('SELECT * FROM plan WHERE owner_phone = $1', [ctx.params.phone]);
+    const result = await pool.query(`SELECT * 
+    FROM plan WHERE owner_phone = $1 AND parentid IS NULL`, [ctx.params.phone]);
     ctx.status = 200;
     ctx.body = {
       data: {
