@@ -61,6 +61,16 @@ class _MyHomePageState extends State<MyHomePage> {
     registerUser();
   }
 
+  Future<Null> refreshList() async {
+    setState(() {
+      plans = fetchPlans();
+    });
+
+    await new Future.delayed(new Duration(seconds: 1));
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: FutureBuilder<List<Plan>>(
-          future: plans,
+          future: fetchPlans(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               return _buildChats(snapshot.data);
@@ -99,16 +109,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildChats(List<Plan> plans) {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: (context, i) {
-          final index = i;
+  Widget _buildChats(List<Plan> plansList) {
+    return RefreshIndicator(
+      child: ListView.builder(
+          padding: const EdgeInsets.all(16.0),
+          itemBuilder: (context, i) {
+            final index = i;
 
-          if (index < plans.length) {
-            return _buildRow(plans[index]);
-          }
-        });
+            if (index < plansList.length) {
+              return _buildRow(plansList[index]);
+            }
+          }),
+      onRefresh: refreshList
+    );
   }
 
   Widget _buildRow(Plan plan) {
