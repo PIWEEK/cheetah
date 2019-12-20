@@ -139,24 +139,31 @@ class CreateFormState extends State<CreateForm > {
                   }
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                  children: <Widget>[
-                   FlatButton(
-                       color: Colors.deepOrange,
-                       textColor: Colors.white,
-                       onPressed: () {
-                         _selectDate(context);
-                       },
-                       child: Text('Seleccionar fecha',)
+                   Expanded(
+                     child: FlatButton(
+                         color: Colors.deepOrangeAccent,
+                         textColor: Colors.white,
+                         onPressed: () {
+                           _selectDate(context);
+                         },
+                         child: Text('Seleccionar fecha',)
+                     ),
                    ),
-                   Text(
-                     " ${_date}",
-                     style: TextStyle(
-                         color: Colors.deepOrange,
-                         fontWeight: FontWeight.bold,
-                         fontSize: 18.0),
+                   Expanded(
+                     child: Align(
+                       alignment: Alignment.centerRight,
+                       child: Text(
+                         " ${_date}",
+                         style: TextStyle(
+                             color: Colors.deepOrange,
+                             fontWeight: FontWeight.bold,
+                             fontSize: 18.0),
+                       ),
+                     ),
                    ),
                  ]
              ),
@@ -166,82 +173,106 @@ class CreateFormState extends State<CreateForm > {
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      FlatButton(
-                          color: Colors.deepOrange,
-                          textColor: Colors.white,
-                          onPressed: () {
-                            _selectTime(context);
-                          },
-                          child: Text('Seleccionar hora',)
+                      Expanded(
+                        child: FlatButton(
+                            color: Colors.deepOrangeAccent,
+                            textColor: Colors.white,
+                            onPressed: () {
+                              _selectTime(context);
+                            },
+                            child: Text('Seleccionar hora',)
+                        ),
                       ),
-                      Text(
-                        " ${_time}",
-                        style: TextStyle(
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18.0),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            " ${_time}",
+                            style: TextStyle(
+                                color: Colors.deepOrange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0),
+                          ),
+                        ),
                       ),
                     ]
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: FlatButton(
-                    color: Colors.deepOrange,
-                    textColor: Colors.white,
-                    onPressed: () {
-                      getContacts();
-                    },
-                    child: Text('Invitados: ${_data.phones.length}',)
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: FlatButton(
+                          color: Colors.deepOrangeAccent,
+                          textColor: Colors.white,
+                          onPressed: () {
+                            getContacts();
+                          },
+                          child: Text('Invitados: ${_data.phones.length}',)
+                      ),
+                    ),
+                    SizedBox(
+                      width: 186.0
+                    )
+                  ],
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: RaisedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState.validate() && !requestInProgress) {
-                      requestInProgress = true;
-                      _formKey.currentState.save();
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: RaisedButton(
+                        color: Colors.deepOrange,
+                        textColor: Colors.white,
+                        onPressed: () async {
+                          if (_formKey.currentState.validate() && !requestInProgress) {
+                            requestInProgress = true;
+                            _formKey.currentState.save();
 
-                      print(_data.phones.map((phone) {
-                        return {
-                          'required': false,
-                          'phone': phone
-                        };
-                      }));
+                            print(_data.phones.map((phone) {
+                              return {
+                                'required': false,
+                                'phone': phone
+                              };
+                            }));
 
-                      if (appData.phone == "600000001") {
-                        _data.phones = ['600000002', '600000003'];
-                      } else if (appData.phone == "600000002") {
-                        _data.phones = ['600000001', '600000003'];
-                      } else {
-                        _data.phones = ['600000001', '600000002'];
-                      }
+                            if (appData.phone == "600000001") {
+                              _data.phones = ['600000002', '600000003'];
+                            } else if (appData.phone == "600000002") {
+                              _data.phones = ['600000001', '600000003'];
+                            } else {
+                              _data.phones = ['600000001', '600000002'];
+                            }
 
-                      String map = jsonEncode({
-                        'name': _data.name,
-                        'description': _data.description,
-                        'date': '${_data.date.year}-${_data.date.month}-${_data.date.day + 1}',
-                        'time': '${_data.time.hour}:${_data.time.minute}',
-                        'min_people': _data.min_attendees,
-                        'people': _data.phones.map((phone) {
-                          return {
-                            'required': false,
-                            'phone': phone
-                          };
-                        }).toList(),
-                        'owner_phone': appData.phone
-                      });
+                            String map = jsonEncode({
+                              'name': _data.name,
+                              'description': _data.description,
+                              'date': '${_data.date.year}-${_data.date.month}-${_data.date.day + 1}',
+                              'time': '${_data.time.hour}:${_data.time.minute}',
+                              'min_people': _data.min_attendees,
+                              'people': _data.phones.map((phone) {
+                                return {
+                                  'required': false,
+                                  'phone': phone
+                                };
+                              }).toList(),
+                              'owner_phone': appData.phone
+                            });
 
-                      Scaffold.of(context)
-                          .showSnackBar(SnackBar(content: Text('Envíando datos')));
+                            Scaffold.of(context)
+                                .showSnackBar(SnackBar(content: Text('Envíando datos')));
 
-                      await createPost(body: map);
-                      requestInProgress = false;
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text('Enviar'),
+                            await createPost(body: map);
+                            requestInProgress = false;
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Text('Enviar'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
